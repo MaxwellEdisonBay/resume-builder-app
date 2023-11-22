@@ -1,10 +1,6 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@components/ui/card";
+import { DatePicker } from "@components/DatePicker";
+import Selector, { SelectorItem } from "@components/Selector";
+import { Card, CardContent } from "@components/ui/card";
 import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
 import { Draggable } from "@hello-pangea/dnd";
@@ -14,6 +10,7 @@ import {
   ContentTypes,
 } from "@models/domain/SectionContent";
 import React, { useState } from "react";
+import { DateRange } from "react-day-picker";
 
 export interface SectionContentProps {
   type: SectionTypes;
@@ -77,6 +74,10 @@ const getTypeText = (type?: ContentTypes) => {
   }
 };
 
+interface WorkSelectorData extends SelectorItem {
+  key: ContentTypes;
+}
+
 export const WorkExperienceContent = ({ content, onChange }: ContentProps) => {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
@@ -86,25 +87,91 @@ export const WorkExperienceContent = ({ content, onChange }: ContentProps) => {
     content?.startDate?.toLocaleString("en-US", options) || "";
   const endDateFormatted =
     content?.endDate?.toLocaleString("en-US", options) || "";
+
+  const [startDate, setStartDate] = useState<Date | undefined>();
+  const [dates, setDates] = useState<Date[] | undefined>();
+  const [range, setRange] = useState<DateRange | undefined>();
+  const [endDate, setEndDate] = useState<Date | undefined>();
+  const [value, setValue] = useState<ContentTypes | undefined>();
+
+  const selectorData: WorkSelectorData[] = [
+    {
+      key: "full-time",
+      text: "Full-time",
+    },
+    {
+      key: "hybrid",
+      text: "Hybrid",
+    },
+    {
+      key: "part-time",
+      text: "Part-time",
+    },
+    {
+      key: "remote",
+      text: "Remote",
+    },
+  ];
   return (
     <Card>
       <CardContent>
         <form>
-          <div className="flex flex-col space-y-1.5">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" placeholder="Name of your project" />
-          </div>
-          <div className="flex flex-row justify-between">
-            <p>{content.title}</p>
-            <p>{content.location || "Location"}</p>
+          <div className="flex flex-row justify-between py-5">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="company">Company</Label>
+              <Input id="company" placeholder="Amazon, Google, etc" />
+            </div>
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="location">Location</Label>
+              <Input id="location" placeholder="eg. Ontario, Canada" />
+            </div>
           </div>
 
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-between py-5 align-baseline">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="company">Position</Label>
+              <Input id="company" placeholder="eg. Software Engineer" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="start-end-dates">Start / End Date</Label>
+                <div
+                  className="flex flex-row gap-2 items-center"
+                  id="start-end-dates"
+                >
+                  <DatePicker
+                    date={startDate}
+                    setDate={setStartDate}
+                    text="Start Date"
+                  />
+                  <DatePicker
+                    date={endDate}
+                    setDate={setEndDate}
+                    text="End Date"
+                  />
+                </div>
+              </div>
+              <Selector
+                onValueChange={(val: string) => setValue(val as ContentTypes)}
+                label="Work Type"
+                placeholder="eg. Remote"
+                value={value}
+                items={selectorData}
+              />
+            </div>
+          </div>
+
+          {/* <div className="flex flex-row justify-between">
+            <p>{content.title}</p>
+            <p>{content.location || "Location"}</p>
+          </div> */}
+
+          {/* <div className="flex flex-row justify-between">
             <p>{content.position}</p>
             <p>{`${startDateFormatted} - ${endDateFormatted}, ${getTypeText(
               content.type
             )}`}</p>
-          </div>
+          </div> */}
         </form>
       </CardContent>
     </Card>
