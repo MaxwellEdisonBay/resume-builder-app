@@ -1,12 +1,9 @@
-import {
-  DragDropContext,
-  DropResult,
-  Droppable
-} from "@hello-pangea/dnd";
+import { DragDropContext, DropResult, Droppable } from "@hello-pangea/dnd";
 import { BaseSection } from "@models/domain/Section";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Section } from "./Section";
-
+import { Button } from "@components/ui/button";
+import { FilePlus2 } from "lucide-react";
 
 interface SectionsDragListProps {
   sections: BaseSection[];
@@ -14,6 +11,7 @@ interface SectionsDragListProps {
 }
 
 const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
+  const [isReorderMode, setisReorderMode] = useState(false);
   const [isBrowser, setIsBrowser] = useState(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -63,6 +61,7 @@ const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
         section={section}
         index={index}
         key={section.id}
+        isReorderMode={isReorderMode}
       />
     ));
   });
@@ -77,7 +76,16 @@ const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
+              <Button
+                className="w-1/4 mb-5"
+                onClick={() => setisReorderMode((prev) => !prev)}
+              >
+                Reorder Sections
+              </Button>
               <SectionList setSections={setSections} sections={sections} />
+              <Button className="max-w-fit bg-green-600 hover:bg-green-700">
+                <FilePlus2 className="w-8 h-8 pr-3" /> Add Section
+              </Button>
               {provided.placeholder}
             </div>
           )}

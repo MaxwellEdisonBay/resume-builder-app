@@ -11,6 +11,7 @@ import {
 } from "@models/domain/SectionContent";
 import React, { useState } from "react";
 import { DateRange } from "react-day-picker";
+import DraggableBullets from "./DraggableBullets";
 
 export interface SectionContentProps {
   type: SectionTypes;
@@ -59,7 +60,7 @@ export const SectionContent = ({
   );
 };
 
-const getTypeText = (type?: ContentTypes) => {
+export const getTypeText = (type?: ContentTypes) => {
   switch (type) {
     case "remote":
       return "Remote";
@@ -116,27 +117,22 @@ export const WorkExperienceContent = ({ content, onChange }: ContentProps) => {
     <Card>
       <CardContent>
         <form>
-          <div className="flex flex-row justify-between py-5">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="company">Company</Label>
-              <Input id="company" placeholder="Amazon, Google, etc" />
-            </div>
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="location">Location</Label>
-              <Input id="location" placeholder="eg. Ontario, Canada" />
-            </div>
-          </div>
-
-          <div className="flex flex-row justify-between py-5 align-baseline">
-            <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="company">Position</Label>
-              <Input id="company" placeholder="eg. Software Engineer" />
+          <div className="flex sm:flex-row flex-col sm:justify-between py-5 sm:gap-2">
+            <div className="flex flex-col justify-betweeen gap-2">
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="company">Company</Label>
+                <Input id="company" placeholder="Amazon, Google, etc" />
+              </div>
+              <div className="flex flex-col space-y-1.5">
+                <Label htmlFor="company">Position</Label>
+                <Input id="company" placeholder="eg. Software Engineer" />
+              </div>
             </div>
             <div className="flex flex-col gap-2">
-              <div className="flex flex-col space-y-1.5">
+              <div className="flex flex-col space-y-1.5 pt-2 sm:pt-0">
                 <Label htmlFor="start-end-dates">Start / End Date</Label>
                 <div
-                  className="flex flex-row gap-2 items-center"
+                  className="flex flex-col sm:flex-row gap-2 sm:items-center"
                   id="start-end-dates"
                 >
                   <DatePicker
@@ -151,27 +147,26 @@ export const WorkExperienceContent = ({ content, onChange }: ContentProps) => {
                   />
                 </div>
               </div>
-              <Selector
-                onValueChange={(val: string) => setValue(val as ContentTypes)}
-                label="Work Type"
-                placeholder="eg. Remote"
-                value={value}
-                items={selectorData}
-              />
+              <div className="flex flex-col  sm:flex-row justify-start gap-4">
+                <div className="flex flex-col space-y-1.5">
+                  <Label htmlFor="location">Location</Label>
+                  <Input id="location" placeholder="eg. Ontario, Canada" />
+                </div>
+                <div className="flex">
+                  <Selector
+                    onValueChange={(val: string) =>
+                      setValue(val as ContentTypes)
+                    }
+                    label="Work Type"
+                    placeholder="eg. Remote"
+                    value={value}
+                    items={selectorData}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* <div className="flex flex-row justify-between">
-            <p>{content.title}</p>
-            <p>{content.location || "Location"}</p>
-          </div> */}
-
-          {/* <div className="flex flex-row justify-between">
-            <p>{content.position}</p>
-            <p>{`${startDateFormatted} - ${endDateFormatted}, ${getTypeText(
-              content.type
-            )}`}</p>
-          </div> */}
+          <DraggableBullets/>
         </form>
       </CardContent>
     </Card>
