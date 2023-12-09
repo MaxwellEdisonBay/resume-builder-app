@@ -20,7 +20,7 @@ const SectionDisplayMode = ({
         const end = moment(content.endDate).format("MMM YYYY");
 
         return (
-          <Card className="mb-3">
+          <Card className="mb-3" key={content._id}>
             <CardContent className="p-5">
               <div className="flex flex-row justify-between">
                 <div className="flex flex-col">

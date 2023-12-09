@@ -1,9 +1,12 @@
+"use client"
 import { DragDropContext, DropResult, Droppable } from "@hello-pangea/dnd";
-import { BaseSection } from "@models/domain/Section";
+import { BaseSection, SectionTypes } from "@models/domain/Section";
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Section } from "./Section";
 import { Button } from "@components/ui/button";
 import { FilePlus2 } from "lucide-react";
+import { Section } from "./Section";
+import { useSession } from "next-auth/react";
+import { AddSectionDropdown } from "./AddSectionDropdown";
 
 interface SectionsDragListProps {
   sections: BaseSection[];
@@ -11,6 +14,7 @@ interface SectionsDragListProps {
 }
 
 const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
+  const { data: session } = useSession();
   const [isReorderMode, setisReorderMode] = useState(false);
   const [isBrowser, setIsBrowser] = useState(false);
   useEffect(() => {
@@ -48,7 +52,7 @@ const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
     );
   }
 
-  const SectionList = React.memo(function SectionList({
+  const SectionList = (function SectionList({
     sections,
     setSections,
   }: {
@@ -60,7 +64,7 @@ const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
         setSections={setSections}
         section={section}
         index={index}
-        key={section.id}
+        key={section._id}
         isReorderMode={isReorderMode}
       />
     ));
@@ -76,6 +80,14 @@ const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
               ref={provided.innerRef}
               {...provided.droppableProps}
             >
+              <Button onClick={async () => {
+                const response = await fetch(`api/sections`, {
+                  method: "DELETE",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({id: "testId"}),
+                });
+                console.log(response)
+              }}>TEST</Button>
               <Button
                 className="w-1/4 mb-5"
                 onClick={() => setisReorderMode((prev) => !prev)}
@@ -83,9 +95,6 @@ const SectionsDragList = ({ sections, setSections }: SectionsDragListProps) => {
                 Reorder Sections
               </Button>
               <SectionList setSections={setSections} sections={sections} />
-              <Button className="max-w-fit bg-green-600 hover:bg-green-700">
-                <FilePlus2 className="w-8 h-8 pr-3" /> Add Section
-              </Button>
               {provided.placeholder}
             </div>
           )}

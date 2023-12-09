@@ -15,14 +15,14 @@ import {
  
 export interface DatePickerProps {
     date: Date | undefined,
-    setDate: React.Dispatch<React.SetStateAction<Date | undefined>>,
+    onChange: (date?: Date) => void,
     text?: string
 }
 
-export function DatePicker({date, setDate, text} : DatePickerProps) {
- 
+export function DatePicker({date, onChange, text} : DatePickerProps) {
+ const [open, setOpen] = React.useState(false)
   return (
-    <Popover>
+    <Popover onOpenChange={() => setOpen((o) => !o)} open={open}>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
@@ -39,7 +39,10 @@ export function DatePicker({date, setDate, text} : DatePickerProps) {
         <Calendar
           mode="single"
           selected={date}
-          onSelect={setDate}
+          onSelect={(date) => {
+            onChange(date)
+            setOpen(false)
+          }}
           initialFocus
         />
       </PopoverContent>

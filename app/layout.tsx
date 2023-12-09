@@ -1,3 +1,4 @@
+import { Toaster } from 'react-hot-toast';
 import "@styles/globals.css";
 import "@styles/main.css"
 import { ReactNode } from "react";
@@ -20,6 +21,7 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
           <main className="app">
             <NavBar />
             {children}
+            <Toaster position="top-right" />
           </main>
         </Provider>
       </body>

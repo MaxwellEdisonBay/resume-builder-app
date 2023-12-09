@@ -1,14 +1,17 @@
 import { Card } from "@components/ui/card";
 import { Input } from "@components/ui/input";
-import TextareaAutosize from 'react-textarea-autosize';
+import TextareaAutosize from "react-textarea-autosize";
 import {
   DragDropContext,
   Draggable,
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
-import { AlignJustify } from "lucide-react";
+import { AlignJustify, Delete } from "lucide-react";
 import React, { useState } from "react";
+import { Button } from "@components/ui/button";
+import mongoose from "mongoose";
+import cloneDeep from "lodash.clonedeep";
 
 interface Bullet {
   id: string;
@@ -25,7 +28,7 @@ const initial = Array.from({ length: 3 }, (v, k) => k).map((k) => {
 });
 
 const grid = 8;
-const reorder = (list: Bullet[], startIndex: number, endIndex: number) => {
+const reorder = (list: string[], startIndex: number, endIndex: number) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
@@ -41,9 +44,9 @@ const reorder = (list: Bullet[], startIndex: number, endIndex: number) => {
 //     padding: ${grid}px;
 //   `;
 
-function Quote({ quote, index }: { quote: Bullet; index: number }) {
+function Bullet({ bullet, index, bulletId }: { bullet: string; index: number, bulletId:string }) {
   return (
-    <Draggable draggableId={quote.id} index={index}>
+    <Draggable draggableId={bulletId} index={index}>
       {(provided) => (
         <Card
           className="w-full  p-5 flex flex-row justify-start items-center gap-5 mb-2"
@@ -54,24 +57,21 @@ function Quote({ quote, index }: { quote: Bullet; index: number }) {
             <AlignJustify className="w-4 h-4 text-slate-500" />
           </div>
 
-          {/* <label
-            htmlFor="message"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Your message
-          </label> */}
-          <TextareaAutosize 
-                      className="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="eg. Implemented a new feature that resulted in 10% increase..."
-          minRows={1} 
-          maxRows={3} 
-          />
-          {/* <textarea
-            id="message"
-            rows={1}
+          <TextareaAutosize
+            value={bullet}
+            onChange={() => {}}
             className="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            placeholder="Write your thoughts here..."
-          ></textarea> */}
+            placeholder="eg. Implemented a new feature that resulted in 10% increase..."
+            minRows={1}
+            maxRows={3}
+          />
+          <Button
+            className="hover:text-red-600 text-red-400"
+            variant="ghost"
+            size="icon"
+          >
+            <Delete className="w-5 h-5 " />
+          </Button>
         </Card>
       )}
     </Draggable>
@@ -79,17 +79,22 @@ function Quote({ quote, index }: { quote: Bullet; index: number }) {
 }
 
 const QuoteList = React.memo(function QuoteList({
-  quotes,
+  // const QuoteList = (function QuoteList({
+  bullets,
 }: {
-  quotes: Bullet[];
+  bullets: string[];
 }) {
-  return quotes.map((quote: Bullet, index: number) => (
-    <Quote quote={quote} index={index} key={quote.id} />
-  ));
+  return bullets.map((bullet: string, index: number) => {
+    const bulletId = new mongoose.Types.ObjectId().toString()
+    return (
+      <Bullet bullet={bullet} index={index} key={bulletId} bulletId={bulletId}/>
+    )
+  });
 });
 
-function QuoteApp() {
-  const [state, setState] = useState<{ quotes: Bullet[] }>({ quotes: initial });
+function QuoteApp({bullets} : {bullets: string[]}) {
+  // const [state, setState] = useState<{ quotes: Bullet[] }>({ quotes: initial });
+  const [localBullets, setLocalBullets] = useState<string[]>(bullets);
 
   function onDragEnd(result: DropResult) {
     if (!result.destination) {
@@ -100,13 +105,13 @@ function QuoteApp() {
       return;
     }
 
-    const quotes = reorder(
-      state.quotes,
+    const newBullets = reorder(
+      localBullets,
       result.source.index,
       result.destination.index
     );
 
-    setState({ quotes });
+    setLocalBullets(newBullets);
   }
 
   return (
@@ -114,19 +119,28 @@ function QuoteApp() {
       <Droppable droppableId="list">
         {(provided) => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
-            <QuoteList quotes={state.quotes} />
+            <QuoteList bullets={localBullets} />
             {provided.placeholder}
           </div>
         )}
       </Droppable>
+      <Button onClick={() => {
+        setLocalBullets((oldBullets) => {
+          const newBullets = cloneDeep(oldBullets)
+          newBullets.push("")
+          return newBullets
+        })
+        console.log(localBullets)
+      }
+      }>Add Bullet Point</Button>
     </DragDropContext>
   );
 }
 
-const DraggableBullets = () => {
+const DraggableBullets = ({bullets} : {bullets : string[]}) => {
   return (
     <div>
-      <QuoteApp />
+      <QuoteApp bullets={bullets}/>
     </div>
   );
 };
