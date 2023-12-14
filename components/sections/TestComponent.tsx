@@ -1,14 +1,14 @@
-"use client"
-import { Button } from "@components/ui/button";
-import { Card } from "@components/ui/card";
-import { Input } from "@components/ui/input";
-import { Separator } from "@components/ui/separator";
+"use client";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@components/ui/tooltip";
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
 import {
   DragDropContext,
   Draggable,
@@ -16,52 +16,35 @@ import {
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Content } from "@models/domain/Content";
+import { BaseDeleteById, Section, SectionTypes } from "@models/domain/Section";
+import { BaseErrorResponse } from "@models/dto/error";
+import { mapFormDataToContent } from "@utils/dataMappers";
+import { SectionSchemas, getSectionSchema } from "@utils/inputSchemas";
 import cloneDeep from "lodash.clonedeep";
-import {
-  FileCheck2,
-  FileEdit,
-  FolderPlus,
-  GitBranchPlus,
-  Trash2,
-} from "lucide-react";
+import { FileCheck2, FileEdit, GitBranchPlus, Undo, X } from "lucide-react";
 import mongoose from "mongoose";
-import React, { useEffect, useState } from "react";
-import { BaseSection } from "./../../models/domain/Section";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { Control, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import * as z from "zod";
+import ContentDisplay from "./ContentDisplay";
+import ContentForm from "./ContentForms";
+import DeleteDialogButton from "./DeleteDialogButton";
+import AddSectionSelect from "./new/AddSectionSelect";
 
-type SectionTypes = "work" | "education" | "skills" | "projects";
-
-interface Section {
-  _id: string;
-  title?: string;
-  first: string;
-  second: string;
-  type: SectionTypes;
-  newAdded?: boolean;
-  content?: Content[];
-  createdAt?: Date;
-  updatedAt?: Date;
+export interface TestComponentProps {
+  userId: string;
+  sections: Section[];
+  setSections: Dispatch<SetStateAction<Section[]>>;
 }
 
-type ContentTypes = "full-time" | "hybrid" | "part-time" | "remote";
-
-interface Content {
-  _id: string;
-  title: string;
-  workType?: ContentTypes;
-  position?: string;
-  startDate?: Date;
-  endDate?: Date;
-  location?: string;
-  bullets?: Bullet[];
-}
-
-interface Bullet {
-  id: string;
-  text: string;
-}
-
-const TestComponent = () => {
-  const [sections, setSections] = useState<Section[]>([]);
+const SectionsComponent = ({
+  userId,
+  sections,
+  setSections,
+}: TestComponentProps) => {
   const reorder = (list: Section[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -74,18 +57,17 @@ const TestComponent = () => {
       work: "Work Experience",
       education: "Education",
       skills: "Skills",
-      projects: "Projects"
-    }
-    return defaultNames[type]
-  }
+      projects: "Projects",
+    };
+    return defaultNames[type];
+  };
 
-  const onSectionAdd = () => {
+  const handleSectionAdd = (sectionType: SectionTypes) => {
     const newSection: Section = {
+      userId,
       _id: new mongoose.Types.ObjectId().toString(),
-      type: "work",
-      title: getDefaultSectionName("work"),
-      first: "",
-      second: "",
+      type: sectionType,
+      title: getDefaultSectionName(sectionType),
       newAdded: true,
       content: [
         {
@@ -115,67 +97,6 @@ const TestComponent = () => {
 
     setSections(items);
   };
-
-  useEffect(() => {
-    const sections: Section[] = [
-      {
-        first: "First1",
-        type: "work",
-        title: getDefaultSectionName("work"),
-        second: "Second1",
-        _id: "1",
-        content: [
-          { title: "Google1_1", position: "Developer1_1", _id: "1_1" },
-          { title: "Google1_2", position: "Developer1_2", _id: "1_2" },
-        ],
-      },
-      {
-        first: "First2",
-        second: "Second2",
-        type: "work",
-        title: getDefaultSectionName("work"),
-        _id: "2",
-        content: [
-          { title: "Google2_1", position: "Developer2_1", _id: "2_1" },
-          { title: "Google2_2", position: "Developer2_2", _id: "2_2" },
-        ],
-      },
-      {
-        first: "First3",
-        second: "Second3",
-        type: "work",
-        title: getDefaultSectionName("work"),
-        _id: "3",
-        content: [
-          { title: "Google3_1", position: "Developer3_1", _id: "3_1" },
-          { title: "Google3_2", position: "Developer3_2", _id: "3_2" },
-        ],
-      },
-      {
-        first: "First4",
-        second: "Second4",
-        type: "work",
-        title: getDefaultSectionName("work"),
-        _id: "4",
-        content: [
-          { title: "Google4_1", position: "Developer4_1", _id: "4_1" },
-          { title: "Google4_2", position: "Developer4_2", _id: "4_2" },
-        ],
-      },
-      {
-        first: "First5",
-        second: "Second5",
-        type: "work",
-        title: getDefaultSectionName("work"),
-        _id: "5",
-        content: [
-          { title: "Google5_1", position: "Developer5_1", _id: "5_1" },
-          { title: "Google5_2", position: "Developer5_2", _id: "5_2" },
-        ],
-      },
-    ];
-    setSections(sections);
-  }, []);
 
   return (
     <div>
@@ -208,13 +129,7 @@ const TestComponent = () => {
             </div>
           )}
         </Droppable>
-        <Button
-          onClick={onSectionAdd}
-          className="bg-green-600 hover:bg-green-700"
-        >
-          <FolderPlus className="w-4 h-4 mr-3" />
-          Add Section
-        </Button>
+        <AddSectionSelect onSectionSelect={handleSectionAdd} />
       </DragDropContext>
     </div>
   );
@@ -230,81 +145,232 @@ const Section = ({
   dragHandleProps: DraggableProvidedDragHandleProps | null;
 }) => {
   const [editing, setEditing] = useState(!!section.newAdded);
+  const [loading, setLoading] = useState(false);
 
-  const onEditClick = () => {
-    setEditing((old) => !old);
+  const sectionSchema = getSectionSchema(section.type);
+
+  const form = useForm<z.infer<typeof sectionSchema>>({
+    resolver: zodResolver(sectionSchema),
+    mode: "onChange",
+  });
+
+  const onEditClick = (e: any) => {
+    if (!editing) {
+      e.preventDefault();
+      setEditing((old) => {
+        return !old;
+      });
+    }
   };
 
-  const onDeleteClick = () => {
+  const onError = (e: any) => {
+    console.log(e);
+  };
+  
+
+  const onSubmit = async (data: z.infer<typeof sectionSchema>, e: any) => {
+    // console.log(data, e);
+    // console.log({ dirty: !!form.formState.isDirty });
+    const updatedSection = cloneDeep(section);
+    mapFormDataToContent(data, updatedSection);
+    console.log({ updatedSection });
+    let resultSectionRs: Section | undefined;
+    if (updatedSection.newAdded) {
+      resultSectionRs = await addNewSection({
+        ...updatedSection,
+        newAdded: false,
+      });
+    } else {
+      resultSectionRs = await updateSection(updatedSection);
+    }
+    if (resultSectionRs) {
+      setSections((oldSections) => {
+        const newSections = cloneDeep(oldSections).map((s) =>
+          s._id === updatedSection._id ? {
+            ...updatedSection,
+            newAdded: false,
+          } : s
+        );
+        return newSections;
+      });
+      resetFormAndClose();
+    }
+  };
+
+  const handleUndo = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault()
+    resetFormAndClose()
+    if (section.newAdded) {
+      removeSectionFromCache()
+    }
+  }
+
+  const resetFormAndClose = () => {
+    form.reset();
+    setEditing(false);
+  };
+
+  const handleSectionDelete = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`api/sections`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: section._id } as BaseDeleteById),
+      });
+      const data = await response.json();
+      if (response.status === 200) {
+        const deletedSection = data as Section;
+        console.log("DELETE: " + deletedSection._id);
+        removeSectionFromCache();
+        toast.success("Section deleted successfully");
+      } else {
+        const errorData = data as BaseErrorResponse;
+        toast.error("Error: " + errorData.message);
+      }
+      setLoading(false);
+    } catch (e) {
+      const errorMessage =
+        e instanceof Error
+          ? e.message
+          : "An exception occurred while deleting a section";
+      toast.error(errorMessage);
+      setLoading(false);
+    }
+  };
+
+  const removeSectionFromCache = () => {
     setSections((oldSections) =>
       cloneDeep(oldSections).filter((s) => s._id !== section._id)
     );
   };
 
-  const onTitleChange = (newTitle: string) => {
-    setSections((oldSections) => {
-      const newSections = cloneDeep(oldSections)
-      newSections.forEach((s) => {if (s._id === section._id) {
-        s.title = newTitle
-        return
-      }})
-      return newSections
-    })
-  }
+  const addNewSection = async (newSection: Section) => {
+    try {
+      const response = await fetch(`api/sections`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newSection),
+      });
+      const newSectionRs: Section = await response.json();
+      console.log({ newSectionRs });
+      toast.success("Added a new section successfully.");
+      return newSectionRs;
+    } catch (e: any) {
+      toast.error(
+        "Error occurred: " + (e instanceof Error) ? e.message : "Unknown"
+      );
+      return undefined;
+    }
+  };
+
+  const updateSection = async (updatedSection: Section) => {
+    try {
+      const response = await fetch(`api/sections`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedSection),
+      });
+      const updatedSectionRs: Section = await response.json();
+      console.log({ updatedSectionRs });
+      toast.success("Added a new section successfully.");
+      return updatedSectionRs;
+    } catch (e: any) {
+      toast.error(
+        "Error occurred: " + (e instanceof Error) ? e.message : "Unknown"
+      );
+      return undefined;
+    }
+  };
+
+  const shouldShowSaveButton = !(editing && !form.formState.isDirty);
 
   return (
-    <div className="flex flex-row p-5 bg-white rounded-lg shadow-md w-full">
-      <div
-        className="flex flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
-        {...dragHandleProps}
-      />
-      <div className="flex flex-col flex-1 gap-3">
-        <div className="flex flex-row justify-between items-center">
-          {editing ? (
-            <Input 
-            className="max-w-[300px] w-fit"
-            value={section.title} 
-            onChange={(e) => onTitleChange(e.target.value)}
-            />
-          ) : (
-            <h1 className="text-lg font-bold">{section.title}</h1>
-          )}
-
-          <div className="flex flex-row space-x-2">
-            <Button
-              className={
-                editing
-                  ? "text-green-500 hover:text-green-600"
-                  : "text-amber-500 hover:text-amber-600"
-              }
-              variant="outline"
-              size="icon"
-              onClick={onEditClick}
-            >
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit, onError)}>
+        <div className="flex flex-row p-5 bg-white rounded-lg shadow-md w-full">
+          <div
+            className="flex flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+            {...dragHandleProps}
+          />
+          <div className="flex flex-col flex-1 gap-3">
+            <div className="flex flex-row justify-between items-center">
               {editing ? (
-                <FileCheck2 className="w-4 h-4" />
+                <FormField
+                  defaultValue={section.title}
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input className="max-w-[300px] w-fit" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               ) : (
-                <FileEdit className="w-4 h-4" />
+                <h1 className="text-lg font-bold">{section.title}</h1>
               )}
-            </Button>
-            <Button
-              className="text-red-500 hover:text-red-700"
-              variant="outline"
-              size="icon"
-              onClick={onDeleteClick}
-            >
-              <Trash2 className="w-4 h-4 " />
-            </Button>
+
+              <div className="flex flex-row space-x-2">
+                {editing && (
+                  <Button
+                    disabled={loading}
+                    type="submit"
+                    className="text-amber-500 hover:text-amber-600"
+                    variant="outline"
+                    size="icon"
+                    onClick={handleUndo}
+                  >
+                    <Undo className="w-4 h-4" />
+                  </Button>
+                )}
+                {shouldShowSaveButton && (
+                  <Button
+                    type="submit"
+                    className={
+                      editing
+                        ? "text-green-500 hover:text-green-600"
+                        : "text-amber-500 hover:text-amber-600"
+                    }
+                    variant="outline"
+                    size="icon"
+                    onClick={onEditClick}
+                  >
+                    {editing ? (
+                      <FileCheck2 className="w-4 h-4" />
+                    ) : (
+                      <FileEdit className="w-4 h-4" />
+                    )}
+                  </Button>
+                )}
+                <DeleteDialogButton
+                  loading={loading}
+                  disabled={false}
+                  onDelete={handleSectionDelete}
+                />
+                {/* <Button
+                  className="text-red-500 hover:text-red-700"
+                  variant="outline"
+                  size="icon"
+                  onClick={onDeleteClick}
+                >
+                  <Trash2 className="w-4 h-4 " />
+                </Button> */}
+              </div>
+            </div>
+            <SectionContent
+              section={section}
+              setSections={setSections}
+              editing={editing}
+              formControl={form.control}
+            />
           </div>
         </div>
-
-        <SectionContent
-          section={section}
-          setSections={setSections}
-          editing={editing}
-        />
-      </div>
-    </div>
+      </form>
+    </Form>
   );
 };
 
@@ -312,11 +378,16 @@ const SectionContent = ({
   section,
   setSections,
   editing,
+  formControl,
 }: {
   section: Section;
   setSections: React.Dispatch<React.SetStateAction<Section[]>>;
   editing: boolean;
+  formControl: Control<z.infer<SectionSchemas>, any>;
 }) => {
+  const isNotLastContent =
+    section.content?.length && section.content?.length > 1;
+
   const handleAddContent = () => {
     setSections((oldSections) => {
       const newSections = cloneDeep(oldSections);
@@ -327,6 +398,24 @@ const SectionContent = ({
       newSections.forEach((s) => {
         if (s._id === section._id) {
           s.content?.push(newContent);
+          return;
+        }
+      });
+      return newSections;
+    });
+  };
+
+  const handleRemoveContent = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    content: Content
+  ) => {
+    e.preventDefault();
+    formControl.unregister(`content.${content._id}`);
+    setSections((oldSections) => {
+      const newSections = cloneDeep(oldSections);
+      newSections.forEach((s) => {
+        if (s._id === section._id) {
+          s.content = s.content?.filter((c) => c._id !== content._id);
           return;
         }
       });
@@ -371,7 +460,12 @@ const SectionContent = ({
           {(provided, snapshot) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {section.content?.map((cont, index) => (
-                <Draggable isDragDisabled={!editing} key={cont._id} draggableId={cont._id} index={index}>
+                <Draggable
+                  isDragDisabled={!editing}
+                  key={cont._id}
+                  draggableId={cont._id}
+                  index={index}
+                >
                   {(provided, snapshot) => (
                     <div
                       {...provided.dragHandleProps}
@@ -379,13 +473,41 @@ const SectionContent = ({
                       ref={provided.innerRef}
                       className="pb-3"
                     >
-                      <Content
+                      {editing ? (
+                        <div className="flex flex-row w-full">
+                          <ContentForm
+                            formControl={formControl}
+                            sectionType={section.type}
+                            content={cont}
+                          />
+                          {isNotLastContent && (
+                            <Button
+                              type="button"
+                              className="text-red-500 hover:text-red-700"
+                              variant="ghost"
+                              size="icon"
+                              onClick={(e) => {
+                                handleRemoveContent(e, cont);
+                              }}
+                            >
+                              <X className="w-4 h-4 " />
+                            </Button>
+                          )}
+                        </div>
+                      ) : (
+                        <ContentDisplay
+                          sectionType={section.type}
+                          content={cont}
+                        />
+                      )}
+                      {/* <Content
                         sectionId={section._id}
                         content={cont}
                         key={cont._id}
                         setSections={setSections}
                         editing={editing}
-                      />
+                        formControl={formControl}
+                      /> */}
                     </div>
                   )}
                 </Draggable>
@@ -397,6 +519,7 @@ const SectionContent = ({
         {editing && (
           <Button
             variant="ghost"
+            type="button"
             onClick={handleAddContent}
             className="w-fit text-green-600 hover:text-green-700"
           >
@@ -409,57 +532,68 @@ const SectionContent = ({
   );
 };
 
-const Content = ({
-  sectionId,
-  setSections,
-  content,
-  editing,
-}: {
-  sectionId: string;
-  content: Content;
-  setSections: React.Dispatch<React.SetStateAction<Section[]>>;
-  editing: boolean;
-}) => {
-  const onFieldEdit = <K extends keyof Content>(key: K, value: Content[K]) => {
-    setSections((oldSections) => {
-      const newSections = cloneDeep(oldSections);
-      newSections.forEach((s) => {
-        if (s._id === sectionId) {
-          s.content?.forEach((c) => {
-            if (c._id === content._id) {
-              c[key] = value;
-            }
-          });
-        }
-      });
-      return newSections;
-    });
-  };
-  return (
-    <Card>
-      {/* <div className=" bg-white pl-10 flex flex-row gap-4 p-5 shadow-sm border-[1px] rounded-md border-slate-400"> */}
-      <div className=" flex flex-row gap-4 p-5 flex-wrap	">
-        {editing ? (
-          <Input
-            className="w-[200px]"
-            value={content.position}
-            onChange={(e) => onFieldEdit("position", e.target.value)}
-          />
-        ) : (
-          <p>{content.position}</p>
-        )}
-        {editing ? (
-          <Input
-            className="w-[200px]"
-            value={content.title}
-            onChange={(e) => onFieldEdit("title", e.target.value)}
-          />
-        ) : (
-          <p>{content.title}</p>
-        )}
-      </div>
-    </Card>
-  );
-};
+// const Content = ({
+//   sectionId,
+//   setSections,
+//   content,
+//   editing,
+//   formControl,
+// }: {
+//   sectionId: string;
+//   content: Content;
+//   setSections: React.Dispatch<React.SetStateAction<Section[]>>;
+//   editing: boolean;
+//   formControl: Control<z.infer<SectionSchemas>, any>;
+// }) => {
+//   const onFieldEdit = <K extends keyof Content>(key: K, value: Content[K]) => {
+//     setSections((oldSections) => {
+//       const newSections = cloneDeep(oldSections);
+//       newSections.forEach((s) => {
+//         if (s._id === sectionId) {
+//           s.content?.forEach((c) => {
+//             if (c._id === content._id) {
+//               c[key] = value;
+//             }
+//           });
+//         }
+//       });
+//       return newSections;
+//     });
+//   };
+//   return (
+//     <Card>
+//       {/* <div className=" bg-white pl-10 flex flex-row gap-4 p-5 shadow-sm border-[1px] rounded-md border-slate-400"> */}
+//       <div className=" flex flex-row gap-4 p-5 flex-wrap	">
+//         {editing ? (
+//           <FormField
+//             defaultValue={content.title}
+//             control={formControl}
+//             name={`content.${content._id}.title`}
+//             render={({ field }) => (
+//               <FormItem>
+//                 <FormLabel>Company</FormLabel>
+//                 <FormControl>
+//                   <Input placeholder="eg. Google" {...field} />
+//                 </FormControl>
+//                 <FormMessage />
+//               </FormItem>
+//             )}
+//           />
+//         ) : (
+//           <p>{content.position}</p>
+//         )}
+//         {editing ? (
+//           <Input
+//             className="w-[200px]"
+//             value={content.title}
+//             onChange={(e) => onFieldEdit("title", e.target.value)}
+//           />
+//         ) : (
+//           <p>{content.title}</p>
+//         )}
+//       </div>
+//     </Card>
+//   );
+// };
 
-export default TestComponent;
+export default SectionsComponent;

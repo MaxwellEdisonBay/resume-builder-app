@@ -1,20 +1,18 @@
 "use client";
-import { AddSectionDropdown } from "@components/sections/AddSectionDropdown";
-import SectionsDragList from "@components/sections/Sections";
-import TestComponent from "@components/sections/TestComponent";
+import SectionsComponent from "@components/sections/TestComponent";
 import { Input } from "@components/ui/input";
-import { BaseSection } from "@models/domain/Section";
+import { Section } from "@models/domain/Section";
 import { showToast } from "@utils/toast";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
 const BuildResume = () => {
   const { data: session } = useSession();
-  const [sections, setSections] = useState<BaseSection[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
   const fetchSections = async () => {
     try {
       const response = await fetch(`api/sections`);
-      const sections: BaseSection[] = await response.json();
+      const sections: Section[] = await response.json();
       setSections(sections);
     } catch (e) {
       const message =
@@ -29,13 +27,13 @@ const BuildResume = () => {
     fetchSections();
   }, []);
 
-  const addSectionToCache = (newSection: BaseSection) => {
-    setSections((oldSections) => [...oldSections, newSection])
+  const addSectionToCache = (newSection: Section) => {
+    setSections((oldSections) => [...oldSections, newSection]);
   };
 
   return (
     <div className="flex flex-col gap-5 pb-10">
-      <TestComponent/>
+      {session?.user.id && <SectionsComponent userId={session?.user.id} sections={sections} setSections={setSections} />}
       {/* <Input/>
       <SectionsDragList sections={sections} setSections={setSections} />
       <AddSectionDropdown onSectionAdded={addSectionToCache} /> */}
