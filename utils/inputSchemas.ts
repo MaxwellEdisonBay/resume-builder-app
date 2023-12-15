@@ -23,9 +23,9 @@ export const WorkFormSchema = z.object({
       message: "Section title must be at least 2 characters.",
     })
     .max(40, { message: "Section title must be less than 40 characters" }),
-  content: z.record(
-    z.string(),
+  content: z.array(
     z.object({
+      _id: z.string(),
       title: z
         .string()
         .min(2, {
@@ -62,9 +62,9 @@ export const EducationFormSchema = z.object({
       message: "Section title must be at least 2 characters.",
     })
     .max(40, { message: "Section title must be less than 40 characters" }),
-  content: z.record(
-    z.string(),
+  content: z.array(
     z.object({
+      _id: z.string(),
       title: z
         .string()
         .min(2, {
@@ -82,9 +82,9 @@ export const ProjectsFormSchema = z.object({
       message: "Section title must be at least 2 characters.",
     })
     .max(40, { message: "Section title must be less than 40 characters" }),
-  content: z.record(
-    z.string(),
+  content: z.array(
     z.object({
+      _id: z.string(),
       title: z
         .string()
         .min(2, {
@@ -102,9 +102,9 @@ export const SkillsFormSchema = z.object({
       message: "Section title must be at least 2 characters.",
     })
     .max(40, { message: "Section title must be less than 40 characters" }),
-  content: z.record(
-    z.string(),
+  content: z.array(
     z.object({
+      _id: z.string(),
       title: z
         .string()
         .min(2, {

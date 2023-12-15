@@ -26,13 +26,20 @@ import cloneDeep from "lodash.clonedeep";
 import { FileCheck2, FileEdit, GitBranchPlus, Undo, X } from "lucide-react";
 import mongoose from "mongoose";
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { Control, useForm } from "react-hook-form";
+import {
+  Control,
+  UseFormReturn,
+  UseFormWatch,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 import toast from "react-hot-toast";
 import * as z from "zod";
 import ContentDisplay from "./ContentDisplay";
 import ContentForm from "./ContentForms";
 import DeleteDialogButton from "./DeleteDialogButton";
 import AddSectionSelect from "./new/AddSectionSelect";
+import { title } from "process";
 
 export interface TestComponentProps {
   userId: string;
@@ -152,6 +159,12 @@ const Section = ({
   const form = useForm<z.infer<typeof sectionSchema>>({
     resolver: zodResolver(sectionSchema),
     mode: "onChange",
+    defaultValues: {
+      title: section.title,
+      content: section.content?.map((c) => {
+        return { ...c, isEndPresent: c.startDate && !c.endDate };
+      }),
+    },
   });
 
   const onEditClick = (e: any) => {
@@ -166,13 +179,18 @@ const Section = ({
   const onError = (e: any) => {
     console.log(e);
   };
-  
 
   const onSubmit = async (data: z.infer<typeof sectionSchema>, e: any) => {
     // console.log(data, e);
     // console.log({ dirty: !!form.formState.isDirty });
-    const updatedSection = cloneDeep(section);
-    mapFormDataToContent(data, updatedSection);
+    // console.log({data})
+    // resetFormAndClose()
+    const updatedSection: Section = {
+      ...cloneDeep(section),
+      title: data.title,
+      content: data.content as Content[],
+    };
+    // mapFormDataToContent(data, updatedSection);
     console.log({ updatedSection });
     let resultSectionRs: Section | undefined;
     if (updatedSection.newAdded) {
@@ -186,27 +204,34 @@ const Section = ({
     if (resultSectionRs) {
       setSections((oldSections) => {
         const newSections = cloneDeep(oldSections).map((s) =>
-          s._id === updatedSection._id ? {
-            ...updatedSection,
-            newAdded: false,
-          } : s
+          s._id === updatedSection._id
+            ? {
+                ...updatedSection,
+                newAdded: false,
+              }
+            : s
         );
+        console.log({ newSections });
+        
         return newSections;
       });
-      resetFormAndClose();
+      
+      resetFormAndClose(updatedSection);
+    } else {
+      resetFormAndClose()
     }
   };
 
   const handleUndo = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault()
-    resetFormAndClose()
+    e.preventDefault();
+    resetFormAndClose();
     if (section.newAdded) {
-      removeSectionFromCache()
+      removeSectionFromCache();
     }
-  }
+  };
 
-  const resetFormAndClose = () => {
-    form.reset();
+  const resetFormAndClose = (updatedSection: Section = section) => {
+    form.reset(updatedSection);
     setEditing(false);
   };
 
@@ -361,12 +386,20 @@ const Section = ({
                 </Button> */}
               </div>
             </div>
-            <SectionContent
-              section={section}
-              setSections={setSections}
-              editing={editing}
-              formControl={form.control}
-            />
+            {editing ? (
+              <SectionContent
+                section={section}
+                setSections={setSections}
+                editing={editing}
+                form={form}
+                formControl={form.control}
+                formWatch={form.watch}
+              />
+            ) : (
+              section?.content?.map((c) => (
+                <ContentDisplay key={c._id} sectionType={section.type} content={c} />
+              ))
+            )}
           </div>
         </div>
       </form>
@@ -378,56 +411,41 @@ const SectionContent = ({
   section,
   setSections,
   editing,
+  form,
   formControl,
+  formWatch,
 }: {
   section: Section;
   setSections: React.Dispatch<React.SetStateAction<Section[]>>;
   editing: boolean;
+  form: UseFormReturn<z.infer<SectionSchemas>, any>;
   formControl: Control<z.infer<SectionSchemas>, any>;
+  formWatch: UseFormWatch<z.infer<SectionSchemas>>;
 }) => {
   const isNotLastContent =
     section.content?.length && section.content?.length > 1;
 
+  const { fields, append, remove, move } = useFieldArray({
+    name: "content",
+    control: formControl,
+  });
+
   const handleAddContent = () => {
-    setSections((oldSections) => {
-      const newSections = cloneDeep(oldSections);
-      const newContent: Content = {
-        _id: new mongoose.Types.ObjectId().toString(),
-        title: "",
-      };
-      newSections.forEach((s) => {
-        if (s._id === section._id) {
-          s.content?.push(newContent);
-          return;
-        }
-      });
-      return newSections;
-    });
+    const newContent: Content = {
+      _id: new mongoose.Types.ObjectId().toString(),
+      title: "",
+      position: "",
+      location: "",
+    };
+    append(newContent);
   };
 
   const handleRemoveContent = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    content: Content
+    index: number
   ) => {
     e.preventDefault();
-    formControl.unregister(`content.${content._id}`);
-    setSections((oldSections) => {
-      const newSections = cloneDeep(oldSections);
-      newSections.forEach((s) => {
-        if (s._id === section._id) {
-          s.content = s.content?.filter((c) => c._id !== content._id);
-          return;
-        }
-      });
-      return newSections;
-    });
-  };
-
-  const reorder = (list: Content[], startIndex: number, endIndex: number) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
+    remove(index);
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -435,23 +453,9 @@ const SectionContent = ({
     if (!result.destination) {
       return;
     }
-
-    const items = reorder(
-      section.content || [],
-      result.source.index,
-      result.destination.index
-    );
-
-    setSections((oldSections) => {
-      const newSections = cloneDeep(oldSections);
-      newSections.forEach((s) => {
-        if (s._id === section._id) {
-          s.content = items;
-          return;
-        }
-      });
-      return newSections;
-    });
+    const start = result.source.index;
+    const destination = result?.destination?.index;
+    move(start, destination);
   };
   return (
     <div className="flex flex-col">
@@ -459,7 +463,7 @@ const SectionContent = ({
         <Droppable droppableId="innerLevelDroppable">
           {(provided, snapshot) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
-              {section.content?.map((cont, index) => (
+              {fields.map((cont, index) => (
                 <Draggable
                   isDragDisabled={!editing}
                   key={cont._id}
@@ -473,12 +477,15 @@ const SectionContent = ({
                       ref={provided.innerRef}
                       className="pb-3"
                     >
-                      {editing ? (
+                      {editing && (
                         <div className="flex flex-row w-full">
                           <ContentForm
+                            form={form}
                             formControl={formControl}
+                            formWatch={formWatch}
                             sectionType={section.type}
                             content={cont}
+                            index={index}
                           />
                           {isNotLastContent && (
                             <Button
@@ -487,18 +494,13 @@ const SectionContent = ({
                               variant="ghost"
                               size="icon"
                               onClick={(e) => {
-                                handleRemoveContent(e, cont);
+                                handleRemoveContent(e, index);
                               }}
                             >
                               <X className="w-4 h-4 " />
                             </Button>
                           )}
                         </div>
-                      ) : (
-                        <ContentDisplay
-                          sectionType={section.type}
-                          content={cont}
-                        />
                       )}
                       {/* <Content
                         sectionId={section._id}

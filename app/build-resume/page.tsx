@@ -1,6 +1,8 @@
 "use client";
-import SectionsComponent from "@components/sections/TestComponent";
+import { InputForm } from "@components/sections/FormTestInput";
+import SectionsComponent from "@components/sections/SectionsComponent";
 import { Input } from "@components/ui/input";
+import { SectionRs, mapSectionRsToContent } from "@models/api/SectionsRs";
 import { Section } from "@models/domain/Section";
 import { showToast } from "@utils/toast";
 import { useSession } from "next-auth/react";
@@ -12,8 +14,9 @@ const BuildResume = () => {
   const fetchSections = async () => {
     try {
       const response = await fetch(`api/sections`);
-      const sections: Section[] = await response.json();
-      setSections(sections);
+      const sectionsRs: SectionRs[] = await response.json();
+      const sections = sectionsRs.map((s) => mapSectionRsToContent(s))
+      setSections(sections)
     } catch (e) {
       const message =
         e instanceof Error
@@ -34,6 +37,7 @@ const BuildResume = () => {
   return (
     <div className="flex flex-col gap-5 pb-10">
       {session?.user.id && <SectionsComponent userId={session?.user.id} sections={sections} setSections={setSections} />}
+      {/* <InputForm/> */}
       {/* <Input/>
       <SectionsDragList sections={sections} setSections={setSections} />
       <AddSectionDropdown onSectionAdded={addSectionToCache} /> */}

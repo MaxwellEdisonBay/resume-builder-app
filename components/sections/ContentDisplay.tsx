@@ -5,7 +5,7 @@ import moment from "moment";
 import React from "react";
 
 interface BaseContentDisplayProps {
-  content: Content;
+  content?: Content;
 }
 
 export interface ContentDisplayProps extends BaseContentDisplayProps {
@@ -24,23 +24,23 @@ const ContentDisplay = ({ content, sectionType }: ContentDisplayProps) => {
 };
 
 const WorkContentDisplay = ({ content }: BaseContentDisplayProps) => {
-  const start = moment(content.startDate).format("MMM YYYY");
-  const end = content.endDate ? moment(content.endDate).format("MMM YYYY") : "Present";
+  const start = moment(content?.startDate).format("MMM YYYY");
+  const end = content?.endDate ? moment(content?.endDate).format("MMM YYYY") : "Present";
   return (
-    <Card className="mb-3" key={content._id}>
+    <Card className="mb-3" key={content?._id}>
       <CardContent className="p-5">
         <div className="flex flex-row justify-between">
           <div className="flex flex-col">
-            <h2 className="font-medium">{`${content.position} @ ${content.title}`}</h2>
-            <h3 className="text-slate-500">{`${content.location} | ${
-              content.workType ? workTypesNames[content.workType] : ""
+            <h2 className="font-medium">{`${content?.position} @ ${content?.title}`}</h2>
+            <h3 className="text-slate-500">{`${content?.location} | ${
+              content?.workType ? workTypesNames[content.workType] : ""
             }`}</h3>
           </div>
           <p className="text-slate-500 italic">{`${start} - ${end}`}</p>
         </div>
 
         <ul className="list-disc px-5 pt-3">
-          {content.bullets?.map((bullet) => (
+          {content?.bullets?.map((bullet) => (
             <li className="">{bullet.text}</li>
           ))}
         </ul>
