@@ -181,17 +181,12 @@ const Section = ({
   };
 
   const onSubmit = async (data: z.infer<typeof sectionSchema>, e: any) => {
-    // console.log(data, e);
-    // console.log({ dirty: !!form.formState.isDirty });
-    // console.log({data})
-    // resetFormAndClose()
     const updatedSection: Section = {
       ...cloneDeep(section),
       title: data.title,
       content: data.content as Content[],
     };
-    // mapFormDataToContent(data, updatedSection);
-    console.log({ updatedSection });
+    // console.log({ updatedSection });
     let resultSectionRs: Section | undefined;
     if (updatedSection.newAdded) {
       resultSectionRs = await addNewSection({
@@ -422,13 +417,13 @@ const SectionContent = ({
   formControl: Control<z.infer<SectionSchemas>, any>;
   formWatch: UseFormWatch<z.infer<SectionSchemas>>;
 }) => {
-  const isNotLastContent =
-    section.content?.length && section.content?.length > 1;
+  
 
   const { fields, append, remove, move } = useFieldArray({
     name: "content",
     control: formControl,
   });
+  const isNotLastContent = fields.length > 1;
 
   const handleAddContent = () => {
     const newContent: Content = {
@@ -465,7 +460,7 @@ const SectionContent = ({
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {fields.map((cont, index) => (
                 <Draggable
-                  isDragDisabled={!editing}
+                  isDragDisabled={!editing || !isNotLastContent}
                   key={cont._id}
                   draggableId={cont._id}
                   index={index}
