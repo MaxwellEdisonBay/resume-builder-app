@@ -36,10 +36,10 @@ import {
 import toast from "react-hot-toast";
 import * as z from "zod";
 import ContentDisplay from "./ContentDisplay";
-import ContentForm from "./ContentForms";
-import DeleteDialogButton from "./DeleteDialogButton";
 import AddSectionSelect from "./new/AddSectionSelect";
 import { title } from "process";
+import ContentForm from "./content-forms/ContentForms";
+import DeleteDialogButton from "./DeleteDialogButton";
 
 export interface TestComponentProps {
   userId: string;
@@ -108,7 +108,7 @@ const SectionsComponent = ({
   return (
     <div>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="outerLevelDroppable">
+        <Droppable droppableId="outerLevelDroppable" isDropDisabled={true}>
           {(provided, snapshot) => (
             <div {...provided.droppableProps} ref={provided.innerRef}>
               {sections.map((section, index) => (
@@ -207,18 +207,19 @@ const Section = ({
             : s
         );
         console.log({ newSections });
-        
+
         return newSections;
       });
-      
+
       resetFormAndClose(updatedSection);
     } else {
-      resetFormAndClose()
+      resetFormAndClose();
     }
   };
 
   const handleUndo = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
+
     resetFormAndClose();
     if (section.newAdded) {
       removeSectionFromCache();
@@ -226,12 +227,21 @@ const Section = ({
   };
 
   const resetFormAndClose = (updatedSection: Section = section) => {
-    form.reset(updatedSection);
+    form.reset({
+      title: updatedSection.title,
+      content: updatedSection.content?.map((c) => {
+        return { ...c, isEndPresent: c.startDate && !c.endDate };
+      }),
+    });
     setEditing(false);
   };
 
   const handleSectionDelete = async () => {
-    setLoading(true);
+    
+    if (section.newAdded) {
+      removeSectionFromCache();
+    } else {
+      setLoading(true);
     try {
       const response = await fetch(`api/sections`, {
         method: "DELETE",
@@ -257,6 +267,8 @@ const Section = ({
       toast.error(errorMessage);
       setLoading(false);
     }
+    }
+    
   };
 
   const removeSectionFromCache = () => {
@@ -310,10 +322,10 @@ const Section = ({
       <form onSubmit={form.handleSubmit(onSubmit, onError)}>
         <div className="flex flex-row p-5 bg-white rounded-lg shadow-md w-full">
           <div
-            className="flex flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+            className="hidden flex flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
             {...dragHandleProps}
           />
-          <div className="flex flex-col flex-1 gap-3">
+          <div className="flex flex-col w-full gap-3">
             <div className="flex flex-row justify-between items-center">
               {editing ? (
                 <FormField
@@ -335,7 +347,7 @@ const Section = ({
               )}
 
               <div className="flex flex-row space-x-2">
-                {editing && (
+                {editing && !section.newAdded && (
                   <Button
                     disabled={loading}
                     type="submit"
@@ -392,7 +404,11 @@ const Section = ({
               />
             ) : (
               section?.content?.map((c) => (
-                <ContentDisplay key={c._id} sectionType={section.type} content={c} />
+                <ContentDisplay
+                  key={c._id}
+                  sectionType={section.type}
+                  content={c}
+                />
               ))
             )}
           </div>
@@ -417,8 +433,6 @@ const SectionContent = ({
   formControl: Control<z.infer<SectionSchemas>, any>;
   formWatch: UseFormWatch<z.infer<SectionSchemas>>;
 }) => {
-  
-
   const { fields, append, remove, move } = useFieldArray({
     name: "content",
     control: formControl,
@@ -467,44 +481,37 @@ const SectionContent = ({
                 >
                   {(provided, snapshot) => (
                     <div
-                      {...provided.dragHandleProps}
                       {...provided.draggableProps}
                       ref={provided.innerRef}
                       className="pb-3"
                     >
-                      {editing && (
-                        <div className="flex flex-row w-full">
-                          <ContentForm
-                            form={form}
-                            formControl={formControl}
-                            formWatch={formWatch}
-                            sectionType={section.type}
-                            content={cont}
-                            index={index}
-                          />
-                          {isNotLastContent && (
-                            <Button
-                              type="button"
-                              className="text-red-500 hover:text-red-700"
-                              variant="ghost"
-                              size="icon"
-                              onClick={(e) => {
-                                handleRemoveContent(e, index);
-                              }}
-                            >
-                              <X className="w-4 h-4 " />
-                            </Button>
-                          )}
-                        </div>
-                      )}
-                      {/* <Content
-                        sectionId={section._id}
-                        content={cont}
-                        key={cont._id}
-                        setSections={setSections}
-                        editing={editing}
-                        formControl={formControl}
-                      /> */}
+                      <div className="flex flex-row w-full">
+                        <div
+                          className="flex flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+                          {...provided.dragHandleProps}
+                        />
+                        <ContentForm
+                          form={form}
+                          formControl={formControl}
+                          formWatch={formWatch}
+                          sectionType={section.type}
+                          content={cont}
+                          index={index}
+                        />
+                        {isNotLastContent && (
+                          <Button
+                            type="button"
+                            className="text-red-500 hover:text-red-700"
+                            variant="ghost"
+                            size="icon"
+                            onClick={(e) => {
+                              handleRemoveContent(e, index);
+                            }}
+                          >
+                            <X className="w-4 h-4 " />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </Draggable>
@@ -528,69 +535,4 @@ const SectionContent = ({
     </div>
   );
 };
-
-// const Content = ({
-//   sectionId,
-//   setSections,
-//   content,
-//   editing,
-//   formControl,
-// }: {
-//   sectionId: string;
-//   content: Content;
-//   setSections: React.Dispatch<React.SetStateAction<Section[]>>;
-//   editing: boolean;
-//   formControl: Control<z.infer<SectionSchemas>, any>;
-// }) => {
-//   const onFieldEdit = <K extends keyof Content>(key: K, value: Content[K]) => {
-//     setSections((oldSections) => {
-//       const newSections = cloneDeep(oldSections);
-//       newSections.forEach((s) => {
-//         if (s._id === sectionId) {
-//           s.content?.forEach((c) => {
-//             if (c._id === content._id) {
-//               c[key] = value;
-//             }
-//           });
-//         }
-//       });
-//       return newSections;
-//     });
-//   };
-//   return (
-//     <Card>
-//       {/* <div className=" bg-white pl-10 flex flex-row gap-4 p-5 shadow-sm border-[1px] rounded-md border-slate-400"> */}
-//       <div className=" flex flex-row gap-4 p-5 flex-wrap	">
-//         {editing ? (
-//           <FormField
-//             defaultValue={content.title}
-//             control={formControl}
-//             name={`content.${content._id}.title`}
-//             render={({ field }) => (
-//               <FormItem>
-//                 <FormLabel>Company</FormLabel>
-//                 <FormControl>
-//                   <Input placeholder="eg. Google" {...field} />
-//                 </FormControl>
-//                 <FormMessage />
-//               </FormItem>
-//             )}
-//           />
-//         ) : (
-//           <p>{content.position}</p>
-//         )}
-//         {editing ? (
-//           <Input
-//             className="w-[200px]"
-//             value={content.title}
-//             onChange={(e) => onFieldEdit("title", e.target.value)}
-//           />
-//         ) : (
-//           <p>{content.title}</p>
-//         )}
-//       </div>
-//     </Card>
-//   );
-// };
-
 export default SectionsComponent;

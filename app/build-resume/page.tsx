@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 const BuildResume = () => {
   const { data: session } = useSession();
   const [sections, setSections] = useState<Section[]>([]);
+  console.log(sections)
   const fetchSections = async () => {
     try {
       const response = await fetch(`api/sections`);

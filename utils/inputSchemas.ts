@@ -26,6 +26,9 @@ const SectionTitleSchema = z
 const BulletSchema = z.object({
   text: z
     .string()
+    .min(1, {
+      message: "Bullet cannot be empty.",
+    })
     .max(250, { message: "Bullet must be less than 250 characters" }),
   _id: z.string(),
 });

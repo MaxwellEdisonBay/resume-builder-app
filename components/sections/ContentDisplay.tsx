@@ -25,11 +25,13 @@ const ContentDisplay = ({ content, sectionType }: ContentDisplayProps) => {
 
 const WorkContentDisplay = ({ content }: BaseContentDisplayProps) => {
   const start = moment(content?.startDate).format("MMM YYYY");
-  const end = content?.endDate ? moment(content?.endDate).format("MMM YYYY") : "Present";
+  const end = content?.endDate
+    ? moment(content?.endDate).format("MMM YYYY")
+    : "Present";
   return (
-    <Card className="mb-3" key={content?._id}>
-      <CardContent className="p-5">
-        <div className="flex flex-row justify-between">
+    <Card className="mb-3 w-full" key={content?._id}>
+      <CardContent className="p-5 w-full">
+        <div className="flex flex-row justify-between w-full">
           <div className="flex flex-col">
             <h2 className="font-medium">{`${content?.position} @ ${content?.title}`}</h2>
             <h3 className="text-slate-500">{`${content?.location} | ${
@@ -41,7 +43,7 @@ const WorkContentDisplay = ({ content }: BaseContentDisplayProps) => {
 
         <ul className="list-disc px-5 pt-3">
           {content?.bullets?.map((bullet) => (
-            <li className="">{bullet.text}</li>
+            <li key={bullet._id} className="hyphens-auto break-words">{bullet.text}</li>
           ))}
         </ul>
       </CardContent>
