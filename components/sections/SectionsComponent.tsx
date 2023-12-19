@@ -40,6 +40,7 @@ import AddSectionSelect from "./new/AddSectionSelect";
 import { title } from "process";
 import ContentForm from "./content-forms/ContentForms";
 import DeleteDialogButton from "./DeleteDialogButton";
+import { cn } from "@lib/utils";
 
 export interface TestComponentProps {
   userId: string;
@@ -52,6 +53,7 @@ const SectionsComponent = ({
   sections,
   setSections,
 }: TestComponentProps) => {
+  const [isSectionReorder, setSectionReorder] = useState(false);
   const reorder = (list: Section[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -127,6 +129,7 @@ const SectionsComponent = ({
                         section={section}
                         setSections={setSections}
                         dragHandleProps={provided.dragHandleProps}
+                        isSectionReorder={isSectionReorder}
                       />
                     </div>
                   )}
@@ -146,10 +149,12 @@ const Section = ({
   section,
   setSections,
   dragHandleProps,
+  isSectionReorder,
 }: {
   section: Section;
   setSections: React.Dispatch<React.SetStateAction<Section[]>>;
   dragHandleProps: DraggableProvidedDragHandleProps | null;
+  isSectionReorder: boolean;
 }) => {
   const [editing, setEditing] = useState(!!section.newAdded);
   const [loading, setLoading] = useState(false);
@@ -324,7 +329,10 @@ const Section = ({
       <form onSubmit={form.handleSubmit(onSubmit, onError)}>
         <div className="flex flex-row p-5 bg-white rounded-lg shadow-md w-full">
           <div
-            className="hidden flex flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+            className={cn(
+              isSectionReorder ? "flex" : "hidden",
+              "flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+            )}
             {...dragHandleProps}
           />
           <div className="flex flex-col w-full gap-3">
@@ -493,10 +501,10 @@ const SectionContent = ({
                     >
                       <div className="flex flex-row w-full">
                         <div
-                          className={
-                            (editing && isNotLastContent ? "flex" : "hidden") +
-                            " flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
-                          }
+                          className={cn(
+                            editing && isNotLastContent ? "flex" : "hidden",
+                            "flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+                          )}
                           {...provided.dragHandleProps}
                         />
                         <ContentForm

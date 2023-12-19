@@ -16,7 +16,7 @@ import {
 } from "@hello-pangea/dnd";
 import { Bullet } from "@models/domain/Content";
 import { SectionSchemas } from "@utils/inputSchemas";
-import { GitBranchPlus, GripHorizontal, X, XCircle } from "lucide-react";
+import { Crown, GitBranchPlus, GripHorizontal, X, XCircle } from "lucide-react";
 import mongoose from "mongoose";
 import React from "react";
 import { Control, useFieldArray } from "react-hook-form";
@@ -132,9 +132,9 @@ const Bullets = ({ contentIndex, formControl }: BulletsProps) => {
           variant="ghost"
           type="button"
           onClick={handleAdd}
-          className="w-fit text-green-600 hover:text-green-700"
+          className="w-fit text-yellow-600 hover:text-yellow-700"
         >
-          <GitBranchPlus className="w-4 h-4 mr-2" />
+          <Crown className="w-4 h-4 mr-2" />
           Add Bullet
         </Button>
       </DragDropContext>
