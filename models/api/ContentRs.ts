@@ -7,9 +7,45 @@ export interface ContentRs {
   position?: string;
   startDate?: string;
   endDate?: string;
+  educationGpaMax?: number;
+  educationGpa?: number;
+  educationDegreeLevel?: EducationDegreeLevel;
+  educationMajorName?: string;
   location?: string;
   bullets?: Bullet[];
 }
+
+export type EducationDegreeLevel =
+  | "aa"
+  | "as"
+  | "aas"
+  | "ba"
+  | "bs"
+  | "baa"
+  | "bas"
+  | "barch"
+  | "bba"
+  | "bfa"
+  | "bsn"
+  | "ma"
+  | "ms"
+  | "mba"
+  | "med"
+  | "mfa"
+  | "llm"
+  | "mpa"
+  | "mph"
+  | "mpp"
+  | "msn"
+  | "msw"
+  | "phd"
+  | "dba"
+  | "edd"
+  | "md"
+  | "dnp"
+  | "pharmd"
+  | "psyd"
+  | "jd";
 
 export const mapContentRsToContent = (rs: ContentRs) => {
   const content: Content = {

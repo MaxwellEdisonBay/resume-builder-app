@@ -27,6 +27,15 @@ const SectionContentSchema = new Schema<Content>(
     endDate: {
       type: Date,
     },
+    educationGpa: {
+      type: String,
+    },
+    educationDegreeLevel: {
+      type: String,
+    },
+    educationMajorName: {
+      type: String,
+    },
     workType: {
       type: String,
       enum: ["full-time", "hybrid", "part-time", "remote"],

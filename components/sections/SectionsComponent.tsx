@@ -206,8 +206,6 @@ const Section = ({
               }
             : s
         );
-        console.log({ newSections });
-
         return newSections;
       });
 
@@ -237,38 +235,36 @@ const Section = ({
   };
 
   const handleSectionDelete = async () => {
-    
     if (section.newAdded) {
       removeSectionFromCache();
     } else {
       setLoading(true);
-    try {
-      const response = await fetch(`api/sections`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: section._id } as BaseDeleteById),
-      });
-      const data = await response.json();
-      if (response.status === 200) {
-        const deletedSection = data as Section;
-        console.log("DELETE: " + deletedSection._id);
-        removeSectionFromCache();
-        toast.success("Section deleted successfully");
-      } else {
-        const errorData = data as BaseErrorResponse;
-        toast.error("Error: " + errorData.message);
+      try {
+        const response = await fetch(`api/sections`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: section._id } as BaseDeleteById),
+        });
+        const data = await response.json();
+        if (response.status === 200) {
+          const deletedSection = data as Section;
+          console.log("DELETE: " + deletedSection._id);
+          removeSectionFromCache();
+          toast.success("Section deleted successfully");
+        } else {
+          const errorData = data as BaseErrorResponse;
+          toast.error("Error: " + errorData.message);
+        }
+        setLoading(false);
+      } catch (e) {
+        const errorMessage =
+          e instanceof Error
+            ? e.message
+            : "An exception occurred while deleting a section";
+        toast.error(errorMessage);
+        setLoading(false);
       }
-      setLoading(false);
-    } catch (e) {
-      const errorMessage =
-        e instanceof Error
-          ? e.message
-          : "An exception occurred while deleting a section";
-      toast.error(errorMessage);
-      setLoading(false);
     }
-    }
-    
   };
 
   const removeSectionFromCache = () => {
@@ -279,6 +275,7 @@ const Section = ({
 
   const addNewSection = async (newSection: Section) => {
     try {
+      setLoading(true);
       const response = await fetch(`api/sections`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -287,17 +284,20 @@ const Section = ({
       const newSectionRs: Section = await response.json();
       console.log({ newSectionRs });
       toast.success("Added a new section successfully.");
+      setLoading(false);
       return newSectionRs;
     } catch (e: any) {
       toast.error(
         "Error occurred: " + (e instanceof Error) ? e.message : "Unknown"
       );
+      setLoading(false);
       return undefined;
     }
   };
 
   const updateSection = async (updatedSection: Section) => {
     try {
+      setLoading(true);
       const response = await fetch(`api/sections`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -306,11 +306,13 @@ const Section = ({
       const updatedSectionRs: Section = await response.json();
       console.log({ updatedSectionRs });
       toast.success("Added a new section successfully.");
+      setLoading(false);
       return updatedSectionRs;
     } catch (e: any) {
       toast.error(
         "Error occurred: " + (e instanceof Error) ? e.message : "Unknown"
       );
+      setLoading(false);
       return undefined;
     }
   };
@@ -361,6 +363,7 @@ const Section = ({
                 )}
                 {shouldShowSaveButton && (
                   <Button
+                    disabled={loading}
                     type="submit"
                     className={
                       editing
@@ -401,6 +404,7 @@ const Section = ({
                 form={form}
                 formControl={form.control}
                 formWatch={form.watch}
+                loading={loading}
               />
             ) : (
               section?.content?.map((c) => (
@@ -425,6 +429,7 @@ const SectionContent = ({
   form,
   formControl,
   formWatch,
+  loading,
 }: {
   section: Section;
   setSections: React.Dispatch<React.SetStateAction<Section[]>>;
@@ -432,6 +437,7 @@ const SectionContent = ({
   form: UseFormReturn<z.infer<SectionSchemas>, any>;
   formControl: Control<z.infer<SectionSchemas>, any>;
   formWatch: UseFormWatch<z.infer<SectionSchemas>>;
+  loading: boolean;
 }) => {
   const { fields, append, remove, move } = useFieldArray({
     name: "content",
@@ -487,7 +493,10 @@ const SectionContent = ({
                     >
                       <div className="flex flex-row w-full">
                         <div
-                          className="flex flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+                          className={
+                            (editing && isNotLastContent ? "flex" : "hidden") +
+                            " flex-row mr-5  bg-slate-200 w-1 border-slate-200 border-2 rounded-sm"
+                          }
                           {...provided.dragHandleProps}
                         />
                         <ContentForm
@@ -501,6 +510,7 @@ const SectionContent = ({
                         {isNotLastContent && (
                           <Button
                             type="button"
+                            disabled={loading}
                             className="text-red-500 hover:text-red-700"
                             variant="ghost"
                             size="icon"
@@ -522,6 +532,7 @@ const SectionContent = ({
         </Droppable>
         {editing && (
           <Button
+            disabled={loading}
             variant="ghost"
             type="button"
             onClick={handleAddContent}

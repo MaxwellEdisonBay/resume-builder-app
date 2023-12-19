@@ -1,8 +1,9 @@
 "use client";
 import { SectionTypes } from "@models/domain/Section";
 import React from "react";
-import { WorkContentForm } from "./ui/WorkContentForm"
+import { WorkContentForm } from "./ui/WorkContentForm";
 import { ContentFormProps } from "./types";
+import { EducationContentForm } from "./ui/EducationContentForm";
 
 const ContentForm = ({
   formControl,
@@ -22,12 +23,19 @@ const ContentForm = ({
         content={content}
       />
     ),
-    education: <div className="">Education Form</div>,
+    education: (
+      <EducationContentForm
+        form={form}
+        index={index}
+        formControl={formControl}
+        formWatch={formWatch}
+        content={content}
+      />
+    ),
     skills: <div className="">Skills Form</div>,
     projects: <div className="">Projects Form</div>,
   };
   return forms[sectionType];
 };
-
 
 export default ContentForm;
