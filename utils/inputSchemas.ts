@@ -144,12 +144,14 @@ export const SkillsFormSchema = z.object({
   content: z.array(
     z.object({
       _id: z.string(),
+      bullets: z.array(BulletSchema),
+      skillInput: z.string().trim().optional(),
       title: z
         .string()
         .min(2, {
-          message: "Content title must be at least 2 characters.",
+          message: "Skills group title must be at least 2 characters.",
         })
-        .max(40, { message: "Content title must be less than 40 characters" }),
+        .max(40, { message: "Skills group title must be less than 40 characters" }),
     })
   ),
 });

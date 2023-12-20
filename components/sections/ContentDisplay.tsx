@@ -1,8 +1,9 @@
+import { Badge } from "@components/ui/badge";
 import { Card, CardContent } from "@components/ui/card";
-import { Separator } from "@components/ui/separator";
 import { EducationDegreeLevel } from "@models/api/ContentRs";
 import { Content, workTypesNames } from "@models/domain/Content";
 import { SectionTypes } from "@models/domain/Section";
+import { getRndColorFromString } from "@utils/formHelpers";
 import moment from "moment";
 import React from "react";
 
@@ -18,7 +19,7 @@ const ContentDisplay = ({ content, sectionType }: ContentDisplayProps) => {
   const contentDisplays: Record<SectionTypes, React.ReactNode> = {
     work: <WorkContentDisplay content={content} />,
     education: <EducationContentDisplay content={content} />,
-    skills: <div className="">Skills Display</div>,
+    skills: <SkillsContentDisplay content={content} />,
     projects: <div className="">Projects Display</div>,
   };
 
@@ -102,15 +103,39 @@ const EducationContentDisplay = ({ content }: BaseContentDisplayProps) => {
           <div className="flex flex-col">
             <h2 className="font-medium">{`${content?.title}`}</h2>
             <div className="text-slate-500 flex flex-row items-center gap-2">
-            <h3 className="">{`${shordDegreeLevel} in ${content?.educationMajorName}`}</h3>
-            {content?.educationGpa ? "|" : ""}
-            <h3 className="font-bold">{content?.educationGpa ? "GPA: " + content.educationGpa : ""}</h3>
+              <h3 className="">{`${shordDegreeLevel} in ${content?.educationMajorName}`}</h3>
+              {content?.educationGpa ? "|" : ""}
+              <h3 className="font-bold">
+                {content?.educationGpa ? "GPA: " + content.educationGpa : ""}
+              </h3>
             </div>
           </div>
           <div className="flex flex-col">
             <p className="">{content?.location}</p>
             <p className="text-slate-500 italic">{`${start} - ${end}`}</p>
           </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const SkillsContentDisplay = ({ content }: BaseContentDisplayProps) => {
+  return (
+    <Card className="mb-3 w-full" key={content?._id}>
+      <CardContent className="p-5 w-full flex flex-col gap-3">
+        <h1 className="font-bold">{content?.title}</h1>
+        <div className="flex flex-row flex-wrap gap-1">
+          {content?.bullets?.map((b) => {
+            return (
+              <Badge
+                key={b._id}
+                style={{ background: getRndColorFromString(content.title) }}
+              >
+                {b.text}
+              </Badge>
+            );
+          })}
         </div>
       </CardContent>
     </Card>
