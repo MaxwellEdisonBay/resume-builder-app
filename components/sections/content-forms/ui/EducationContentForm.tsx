@@ -4,8 +4,14 @@ import { Calendar } from "@components/ui/calendar";
 import { Card } from "@components/ui/card";
 import { Checkbox } from "@components/ui/checkbox";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@components/ui/command";
+import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,31 +23,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@components/ui/select";
+import { ScrollArea } from "@components/ui/scroll-area";
 import { cn } from "@lib/utils";
-import { workTypesNames } from "@models/domain/Content";
-import { EducationFormSchema, WorkFormSchema } from "@utils/inputSchemas";
+import { EducationDegreeLevel } from "@models/api/ContentRs";
+import { EducationFormSchema } from "@utils/inputSchemas";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Control, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import Bullets from "../../Bullets";
 import { BaseContentFormProps } from "../types";
-import { EducationDegreeLevel } from "@models/api/ContentRs";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@components/ui/command";
-import { ScrollArea } from "@components/ui/scroll-area";
 
 export const EducationContentForm = ({
   content,
@@ -125,75 +115,73 @@ export const EducationContentForm = ({
             <FormField
               control={educationFormControl}
               name={`content.${index}.educationDegreeLevel`}
-              render={({ field }) => { 
-                const [open, setOpen] = useState(false)
+              render={({ field }) => {
+                const [open, setOpen] = useState(false);
                 return (
-                <FormItem className="flex flex-col">
-                  <FormLabel className="pt-1.5 pb-1">Level of education</FormLabel>
-                  <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-[200px] justify-between mt-4",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          <p className=" truncate">
-                            {field.value
-                              ? degrees.find(
-                                  (degree) => degree.value === field.value
-                                )?.label
-                              : "Select degree"}
-                          </p>
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                      <ScrollArea className="rounded-md border h-[200px]">
-
-                        <CommandInput placeholder="Search degree..." />
-                        <CommandEmpty>No degree found.</CommandEmpty>
-                        <CommandGroup className="">
-
-                        
-                        {degrees.map((degree) => (
-                            <CommandItem
-                              value={degree.label}
-                              key={degree.value}
-                              onSelect={() => {
-                                educationForm.setValue(
-                                  `content.${index}.educationDegreeLevel`,
-                                  degree.value
-                                );
-                                setOpen(false)
-                              }}
-                            >
-                              <Check
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  degree.value === field.value
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              {degree.label}
-                            </CommandItem>
-                          ))}
-
-                        </CommandGroup>
-                        </ScrollArea>
-                          
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}}
+                  <FormItem className="flex flex-col">
+                    <FormLabel className="pt-1.5 pb-1">
+                      Level of education
+                    </FormLabel>
+                    <Popover open={open} onOpenChange={setOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className={cn(
+                              "w-[200px] justify-between mt-4",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            <p className=" truncate">
+                              {field.value
+                                ? degrees.find(
+                                    (degree) => degree.value === field.value
+                                  )?.label
+                                : "Select degree"}
+                            </p>
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[200px] p-0">
+                        <Command>
+                          <ScrollArea className="rounded-md border h-[200px]">
+                            <CommandInput placeholder="Search degree..." />
+                            <CommandEmpty>No degree found.</CommandEmpty>
+                            <CommandGroup className="">
+                              {degrees.map((degree) => (
+                                <CommandItem
+                                  value={degree.label}
+                                  key={degree.value}
+                                  onSelect={() => {
+                                    educationForm.setValue(
+                                      `content.${index}.educationDegreeLevel`,
+                                      degree.value
+                                    );
+                                    setOpen(false);
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      degree.value === field.value
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
+                                  />
+                                  {degree.label}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </ScrollArea>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
             <FormField
               control={educationFormControl}
@@ -339,7 +327,11 @@ export const EducationContentForm = ({
                 <FormItem>
                   <FormLabel>Field of study</FormLabel>
                   <FormControl>
-                    <Input placeholder="eg. Computer Science" {...field} value={field.value || ""} />
+                    <Input
+                      placeholder="eg. Computer Science"
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -352,7 +344,11 @@ export const EducationContentForm = ({
                 <FormItem>
                   <FormLabel>Location</FormLabel>
                   <FormControl>
-                    <Input placeholder="eg. Toronto, ON" {...field} value={field.value || ""}/>
+                    <Input
+                      placeholder="eg. Toronto, ON"
+                      {...field}
+                      value={field.value || ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

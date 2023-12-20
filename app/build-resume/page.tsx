@@ -1,5 +1,4 @@
 "use client";
-import { InputForm } from "@components/sections/FormTestInput";
 import SectionsComponent from "@components/sections/SectionsComponent";
 import { Input } from "@components/ui/input";
 import { SectionRs, mapSectionRsToContent } from "@models/api/SectionsRs";

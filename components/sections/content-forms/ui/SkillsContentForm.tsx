@@ -1,5 +1,5 @@
 "use client";
-import { Badge } from "@components/ui/badge";
+import Chips from "@components/sections/Chips";
 import { Button } from "@components/ui/button";
 import { Card } from "@components/ui/card";
 import {
@@ -10,15 +10,13 @@ import {
   FormMessage,
 } from "@components/ui/form";
 import { Input } from "@components/ui/input";
+import { getRndColorFromString, handleIgnoreEnter } from "@utils/formHelpers";
 import { SkillsFormSchema } from "@utils/inputSchemas";
-import { Lightbulb, Plus, XCircle } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import mongoose from "mongoose";
-import { useEffect, useState } from "react";
 import { Control, UseFormReturn, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { BaseContentFormProps } from "../types";
-import Chips from "@components/sections/Chips";
-import { getRndColorFromString, handleIgnoreEnter } from "@utils/formHelpers";
 
 export const SkillsContentForm = ({
   content,
@@ -118,23 +116,9 @@ export const SkillsContentForm = ({
           )}
         />
         <Button type="button" disabled={!isInputCorrect} onClick={handleAddTag}>
-        <Lightbulb className="w-4 h-4 mr-2" />
+          <Lightbulb className="w-4 h-4 mr-2" />
           Add skill
         </Button>
-        {/* <div className="flex flex-row gap-1">
-          <Input
-            placeholder="eg. React"
-            value={skillText}
-            onChange={(e) => setSkillText(e.target.value)}
-          />
-          <Button
-            type="button"
-            onClick={onSkillTextAdd}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div> */}
       </div>
       <Chips
         formControl={formControl}
@@ -144,23 +128,6 @@ export const SkillsContentForm = ({
         onRemove={remove}
         color={getRndColorFromString(content.title)}
       />
-      {/* <div className="flex flex-row flex-wrap gap-1 transition-all duration-300">
-        {bullets.map((b, skilIndex) => (
-          <Badge
-            className="py-1 pl-3 pr-1 w-fit bg-sky-600 hover:bg-sky-600"
-            id={`content.${index}.bullets.${skilIndex}.text`}
-            key={skilIndex}
-          >
-            {b.text}
-            <XCircle
-              className="ml-2 w-5 h-5 cursor-pointer hover:text-red-500 text-white"
-              onClick={(e) => onRemove(e, skilIndex)}
-            />
-          </Badge>
-        ))}
-
-      </div> */}
-      {/* <BulletsGrid contentIndex={index} formControl={formControl} /> */}
     </Card>
   );
 };

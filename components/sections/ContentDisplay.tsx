@@ -108,7 +108,7 @@ const EducationContentDisplay = ({ content }: BaseContentDisplayProps) => {
               {content?.educationGpa && (
                 <Badge>{`GPA: ${content.educationGpa}`}</Badge>
               )}
-              
+
               {/* <h3 className="font-bold">
                 {content?.educationGpa ? "GPA: " + content.educationGpa : ""}
               </h3> */}

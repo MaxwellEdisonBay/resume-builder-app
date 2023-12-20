@@ -17,10 +17,10 @@ import {
   Droppable,
 } from "@hello-pangea/dnd";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@lib/utils";
 import { Content } from "@models/domain/Content";
 import { BaseDeleteById, Section, SectionTypes } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
-import { mapFormDataToContent } from "@utils/dataMappers";
 import { SectionSchemas, getSectionSchema } from "@utils/inputSchemas";
 import cloneDeep from "lodash.clonedeep";
 import { FileCheck2, FileEdit, GitBranchPlus, Undo, X } from "lucide-react";
@@ -36,11 +36,9 @@ import {
 import toast from "react-hot-toast";
 import * as z from "zod";
 import ContentDisplay from "./ContentDisplay";
-import AddSectionSelect from "./new/AddSectionSelect";
-import { title } from "process";
-import ContentForm from "./content-forms/ContentForms";
 import DeleteDialogButton from "./DeleteDialogButton";
-import { cn } from "@lib/utils";
+import ContentForm from "./content-forms/ContentForms";
+import AddSectionSelect from "./new/AddSectionSelect";
 
 export interface TestComponentProps {
   userId: string;
@@ -394,14 +392,6 @@ const Section = ({
                   disabled={false}
                   onDelete={handleSectionDelete}
                 />
-                {/* <Button
-                  className="text-red-500 hover:text-red-700"
-                  variant="outline"
-                  size="icon"
-                  onClick={onDeleteClick}
-                >
-                  <Trash2 className="w-4 h-4 " />
-                </Button> */}
               </div>
             </div>
             {editing ? (

@@ -10,10 +10,7 @@ import {
 import { cn } from "@lib/utils";
 import { Bullet } from "@models/domain/Content";
 import { SectionSchemas } from "@utils/inputSchemas";
-import {
-  ArrowLeftRight,
-  XCircle
-} from "lucide-react";
+import { ArrowLeftRight, XCircle } from "lucide-react";
 import React, { useState } from "react";
 import { Control } from "react-hook-form";
 import { z } from "zod";
@@ -35,15 +32,6 @@ const Chips = ({
   formControl,
   color,
 }: ChipsProps) => {
-  // const {
-  //   fields: bullets,
-  //   append,
-  //   remove,
-  //   move,
-  // } = useFieldArray({
-  //   name: `content.${contentIndex}.bullets`,
-  //   control: formControl,
-  // });
   const isNotLastBullet = bullets.length > 1;
   const handleRemove = (
     e: React.MouseEvent<SVGSVGElement, MouseEvent>,
@@ -52,16 +40,7 @@ const Chips = ({
     e.preventDefault();
     onRemove(index);
   };
-  // const handleAdd = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-  //   e.preventDefault();
-  //   const newBullet: Bullet = {
-  //     _id: new mongoose.Types.ObjectId().toString(),
-  //     text: "",
-  //   };
-  //   append(newBullet);
-  // };
   const [dragging, setDragging] = useState(false);
-  // console.log(dragging);
   const onDragEnd = (result: DropResult) => {
     // dropped outside the list
     if (!result.destination) {
@@ -148,15 +127,6 @@ const Chips = ({
                         >
                           <DisplayBadge index={index} bullet={bullet} />
                         </div>
-
-                        // <Card
-                        //   className="flex flex-row w-fit h-fit mr-2 break-normal	"
-                        // {...provided.draggableProps}
-                        // {...provided.dragHandleProps}
-                        // ref={provided.innerRef}
-                        // >
-                        //   {bullet.text}
-                        // </Card>
                       )}
                     </Draggable>
                   ))}
@@ -166,16 +136,6 @@ const Chips = ({
               </ScrollArea>
             )}
           </Droppable>
-
-          {/* <Button
-          variant="ghost"
-          type="button"
-          onClick={handleAdd}
-          className="w-fit text-yellow-600 hover:text-yellow-700"
-        >
-          <Crown className="w-4 h-4 mr-2" />
-          Add Bullet
-        </Button> */}
         </DragDropContext>
       ) : (
         <BulletsDisplay />

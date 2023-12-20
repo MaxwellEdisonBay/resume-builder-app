@@ -4,10 +4,8 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@components/ui/form";
-import { Input } from "@components/ui/input";
 import {
   DragDropContext,
   Draggable,
@@ -16,12 +14,12 @@ import {
 } from "@hello-pangea/dnd";
 import { Bullet } from "@models/domain/Content";
 import { SectionSchemas } from "@utils/inputSchemas";
-import { Crown, GitBranchPlus, GripHorizontal, X, XCircle } from "lucide-react";
+import { Crown, GripHorizontal, XCircle } from "lucide-react";
 import mongoose from "mongoose";
 import React from "react";
 import { Control, useFieldArray } from "react-hook-form";
-import { z } from "zod";
 import TextareaAutosize from "react-textarea-autosize";
+import { z } from "zod";
 
 export interface BulletsProps {
   formControl: Control<z.infer<SectionSchemas>, any>;
@@ -83,41 +81,45 @@ const Bullets = ({ contentIndex, formControl }: BulletsProps) => {
                       {...provided.draggableProps}
                       ref={provided.innerRef}
                     >
-                      <div {...provided.dragHandleProps} className="flex items-center pl-3">
+                      <div
+                        {...provided.dragHandleProps}
+                        className="flex items-center pl-3"
+                      >
                         <GripHorizontal className="w-4 h-4 mr-3 text-slate-500" />
                       </div>
                       <div className="flex flex-row py-3 w-full">
-                      <FormField
-                        // defaultValue={content.location || ""}
-                        
-                        control={formControl}
-                        name={`content.${contentIndex}.bullets.${index}.text`}
-                        render={({ field }) => (
-                          <FormItem className="flex-1">
-                            {/* <FormLabel>Bullet Text</FormLabel> */}
-                            <FormControl>
-                              <TextareaAutosize
-                              maxLength={250}
-                                {...field}
-                                className="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                placeholder="eg. Implemented a new feature that resulted in 10% increase..."
-                                minRows={1}
-                                maxRows={3}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                    type="button"
-                    className="text-red-500 hover:text-red-600"
-                    variant="ghost"
-                    size="icon"
-                    onClick={(e) => handleRemove(e, index)}
-                  >
-                    <XCircle className="w-4 h-4"/>
-                  </Button>
+                        <FormField
+                          // defaultValue={content.location || ""}
+
+                          control={formControl}
+                          name={`content.${contentIndex}.bullets.${index}.text`}
+                          render={({ field }) => (
+                            <FormItem className="flex-1">
+                              {/* <FormLabel>Bullet Text</FormLabel> */}
+                              <FormControl>
+                                <TextareaAutosize
+                                  maxLength={250}
+                                  {...field}
+                                  className="resize-none block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                  placeholder="eg. Implemented a new feature that resulted in 10% increase..."
+                                  minRows={1}
+                                  maxRows={3}
+                                  value={field.value || ""}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button
+                          type="button"
+                          className="text-red-500 hover:text-red-600"
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => handleRemove(e, index)}
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </Button>
                       </div>
                     </Card>
                   )}

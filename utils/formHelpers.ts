@@ -15,27 +15,27 @@ export const bulletColors = [
 ] as const;
 
 export const chipsColorSet = [
-    "#fb923c",
-    "#fbbf24",
-    "#a3e635",
-    "#34d399",
-    "#2dd4bf",
-    "#22d3ee",
-    "#38bdf8",
-    "#60a5fa",
-    "#818cf8",
-    "#c084fc",
-    "#e879f9",
-    "#a78bfa"
-  ] as const;
+  "#fb923c",
+  "#fbbf24",
+  "#a3e635",
+  "#34d399",
+  "#2dd4bf",
+  "#22d3ee",
+  "#38bdf8",
+  "#60a5fa",
+  "#818cf8",
+  "#c084fc",
+  "#e879f9",
+  "#a78bfa",
+] as const;
 
 export const getRndColorFromString = (title?: string) => {
-    let test = 0;
-    if (title) {
-      for (let i = 0; i < title.length; i++) {
-        test += title.charCodeAt(i);
-      }
-      test %= chipsColorSet.length;
+  let test = 0;
+  if (title) {
+    for (let i = 0; i < title.length; i++) {
+      test += title.charCodeAt(i);
     }
-    return chipsColorSet[test]
-  };
+    test %= chipsColorSet.length;
+  }
+  return chipsColorSet[test];
+};
