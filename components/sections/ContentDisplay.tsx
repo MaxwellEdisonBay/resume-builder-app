@@ -104,10 +104,14 @@ const EducationContentDisplay = ({ content }: BaseContentDisplayProps) => {
             <h2 className="font-medium">{`${content?.title}`}</h2>
             <div className="text-slate-500 flex flex-row items-center gap-2">
               <h3 className="">{`${shordDegreeLevel} in ${content?.educationMajorName}`}</h3>
-              {content?.educationGpa ? "|" : ""}
-              <h3 className="font-bold">
+              {/* {content?.educationGpa ? "|" : ""} */}
+              {content?.educationGpa && (
+                <Badge>{`GPA: ${content.educationGpa}`}</Badge>
+              )}
+              
+              {/* <h3 className="font-bold">
                 {content?.educationGpa ? "GPA: " + content.educationGpa : ""}
-              </h3>
+              </h3> */}
             </div>
           </div>
           <div className="flex flex-col">

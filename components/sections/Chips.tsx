@@ -1,37 +1,22 @@
+import { Badge } from "@components/ui/badge";
 import { Button } from "@components/ui/button";
-import { Card } from "@components/ui/card";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@components/ui/form";
-import { Input } from "@components/ui/input";
+import { ScrollArea, ScrollBar } from "@components/ui/scroll-area";
 import {
   DragDropContext,
   Draggable,
   DropResult,
   Droppable,
 } from "@hello-pangea/dnd";
+import { cn } from "@lib/utils";
 import { Bullet } from "@models/domain/Content";
 import { SectionSchemas } from "@utils/inputSchemas";
 import {
   ArrowLeftRight,
-  Crown,
-  GitBranchPlus,
-  GripHorizontal,
-  X,
-  XCircle,
+  XCircle
 } from "lucide-react";
-import mongoose from "mongoose";
 import React, { useState } from "react";
-import { Control, useFieldArray } from "react-hook-form";
+import { Control } from "react-hook-form";
 import { z } from "zod";
-import TextareaAutosize from "react-textarea-autosize";
-import { cn } from "@lib/utils";
-import { ScrollArea, ScrollBar } from "@components/ui/scroll-area";
-import { Badge } from "@components/ui/badge";
 
 export interface ChipsProps {
   formControl: Control<z.infer<SectionSchemas>, any>;
@@ -39,7 +24,7 @@ export interface ChipsProps {
   bullets: Bullet[];
   onMove: (start: number, end: number) => void;
   onRemove: (index: number) => void;
-  color?: string
+  color?: string;
 }
 
 const Chips = ({
@@ -48,7 +33,7 @@ const Chips = ({
   onRemove,
   contentIndex,
   formControl,
-  color
+  color,
 }: ChipsProps) => {
   // const {
   //   fields: bullets,
@@ -103,9 +88,9 @@ const Chips = ({
     return (
       <Badge
         variant="outline"
-        style={{borderColor: color}}
+        style={{ borderColor: color }}
         key={bullet._id}
-        className="py-2 pl-3 pr-1 text-sm bg-white font-normal whitespace-nowrap	"
+        className="py-2 pl-3 pr-1 text-sm bg-white font-normal whitespace-nowrap"
       >
         {bullet.text}
         <XCircle
