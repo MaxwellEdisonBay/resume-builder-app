@@ -23,7 +23,7 @@ import { BaseDeleteById, Section, SectionTypes } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
 import { SectionSchemas, getSectionSchema } from "@utils/inputSchemas";
 import cloneDeep from "lodash.clonedeep";
-import { FileCheck2, FileEdit, GitBranchPlus, Undo, X } from "lucide-react";
+import { Briefcase, FileCheck2, FileEdit, Folder, GitBranchPlus, GraduationCap, Lightbulb, Undo, X } from "lucide-react";
 import mongoose from "mongoose";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import {
@@ -322,6 +322,16 @@ const Section = ({
 
   const shouldShowSaveButton = !(editing && !form.formState.isDirty);
 
+  const SectionIcon = () => {
+    const sectionIcons: Record<SectionTypes, React.ReactNode> = {
+      education: <Briefcase className="h-5 w-5" />,
+      work: <GraduationCap className="h-5 w-5" />,
+      projects: <Lightbulb className="h-5 w-5" />,
+      skills: <Folder className="h-5 w-5" />,
+    } as const
+    return sectionIcons[section.type]
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onError)}>
@@ -351,7 +361,10 @@ const Section = ({
                   )}
                 />
               ) : (
-                <h1 className="text-lg font-bold">{section.title}</h1>
+                <div className="flex flex-row gap-3 items-center">
+                  <SectionIcon/>
+                  <h1 className="text-lg font-bold">{section.title}</h1>
+                </div>
               )}
 
               <div className="flex flex-row space-x-2">
@@ -470,6 +483,14 @@ const SectionContent = ({
     const destination = result?.destination?.index;
     move(start, destination);
   };
+
+  const addContentButtonText: Record<SectionTypes, string> = {
+    work: "Add work experience",
+    skills: "Add skills",
+    projects: "Add a project",
+    education: "Add education"
+  }
+
   return (
     <div className="flex flex-col">
       <DragDropContext onDragEnd={onDragEnd}>
@@ -537,7 +558,7 @@ const SectionContent = ({
             className="w-fit text-green-600 hover:text-green-700"
           >
             <GitBranchPlus className="w-4 h-4 mr-2" />
-            Add Content
+            {addContentButtonText[section.type]}
           </Button>
         )}
       </DragDropContext>

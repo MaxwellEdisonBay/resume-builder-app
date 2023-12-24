@@ -36,6 +36,13 @@ const SectionContentSchema = new Schema<Content>(
     educationMajorName: {
       type: String,
     },
+    githubUrl: {
+      type: String,
+    },
+    websiteUrl: {
+      type: String,
+    },
+
     workType: {
       type: String,
       enum: ["full-time", "hybrid", "part-time", "remote"],

@@ -4,7 +4,9 @@ import { EducationDegreeLevel } from "@models/api/ContentRs";
 import { Content, workTypesNames } from "@models/domain/Content";
 import { SectionTypes } from "@models/domain/Section";
 import { getRndColorFromString } from "@utils/formHelpers";
+import { Github, Link as LinkIcon } from "lucide-react";
 import moment from "moment";
+import Link from "next/link";
 import React from "react";
 
 interface BaseContentDisplayProps {
@@ -20,7 +22,7 @@ const ContentDisplay = ({ content, sectionType }: ContentDisplayProps) => {
     work: <WorkContentDisplay content={content} />,
     education: <EducationContentDisplay content={content} />,
     skills: <SkillsContentDisplay content={content} />,
-    projects: <div className="">Projects Display</div>,
+    projects: <ProjectsContentDisplay content={content} />,
   };
 
   return contentDisplays[sectionType];
@@ -141,6 +143,66 @@ const SkillsContentDisplay = ({ content }: BaseContentDisplayProps) => {
             );
           })}
         </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const ProjectsContentDisplay = ({ content }: BaseContentDisplayProps) => {
+  const start =
+    content?.startDate && moment(content.startDate).format("MMM YYYY");
+  const end =
+    content?.startDate &&
+    (content?.endDate
+      ? moment(content?.endDate).format("MMM YYYY")
+      : "Present");
+  return (
+    <Card className="mb-3 w-full" key={content?._id}>
+      <CardContent className="p-5 w-full">
+        <div className="flex flex-row justify-between w-full flex-wrap">
+          <div className="flex flex-row gap-3 flex-wrap">
+            <h2 className="font-medium">{`${content?.title}`}</h2>
+            <div className="flex flex-row items-center gap-1">
+              {content?.githubUrl && (
+                <>
+                  <Link href={content.githubUrl} passHref={true}>
+                    <Badge variant="outline">
+                      <div className="flex flex-row items-center">
+                      <Github className="w-4 h-4 mr-2" />
+                      <p>GitHub</p>
+                      </div>
+                      
+                    </Badge>
+                  </Link>
+                </>
+              )}
+              {content?.websiteUrl && (
+                <>
+                  <Link href={content.websiteUrl} passHref={true}>
+                    <Badge variant="outline">
+                      <div className="flex flex-row items-center ">
+                      <LinkIcon className="w-4 h-4 mr-2" />
+                      <p>Website</p>
+                      </div>
+                      
+                    </Badge>
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+          {start && end && (
+            <p className="text-slate-500 italic">{`${start} - ${end}`}</p>
+          )}
+        </div>
+
+        <ul className="list-disc px-5 pt-3">
+          {content?.bullets?.map((bullet) => (
+            <li key={bullet._id} className="hyphens-auto break-words">
+              {bullet.text}
+            </li>
+          ))}
+        </ul>
       </CardContent>
     </Card>
   );

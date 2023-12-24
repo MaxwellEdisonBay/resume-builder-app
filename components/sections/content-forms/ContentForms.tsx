@@ -5,6 +5,7 @@ import { WorkContentForm } from "./ui/WorkContentForm";
 import { ContentFormProps } from "./types";
 import { EducationContentForm } from "./ui/EducationContentForm";
 import { SkillsContentForm } from "./ui/SkillsContentForm";
+import { ProjectsContentForm } from "./ui/ProjectsContentForm";
 
 const ContentForm = ({
   formControl,
@@ -42,7 +43,15 @@ const ContentForm = ({
         content={content}
       />
     ),
-    projects: <div className="">Projects Form</div>,
+    projects: (
+      <ProjectsContentForm
+        form={form}
+        index={index}
+        formControl={formControl}
+        formWatch={formWatch}
+        content={content}
+      />
+    ),
   };
   return forms[sectionType];
 };

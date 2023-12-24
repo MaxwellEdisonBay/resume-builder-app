@@ -145,16 +145,45 @@ export const EducationFormSchema = z.object({
 export const ProjectsFormSchema = z.object({
   title: SectionTitleSchema,
   content: z.array(
-    z.object({
-      _id: z.string(),
-      title: z
-        .string()
-        .trim()
-        .min(2, {
-          message: "Content title must be at least 2 characters.",
-        })
-        .max(40, { message: "Content title must be less than 40 characters" }),
-    })
+    z
+      .object({
+        _id: z.string(),
+        title: z
+          .string()
+          .trim()
+          .min(2, {
+            message: "Content title must be at least 2 characters.",
+          })
+          .max(40, {
+            message: "Content title must be less than 40 characters",
+          }),
+          githubUrl: z
+          .string()
+          .url()
+          .trim()
+          .max(150, {
+            message: "Github URL must be less than 150 characters",
+          }).optional(),
+          websiteUrl: z
+          .string()
+          .url()
+          .trim()
+          .max(150, {
+            message: "Website URL must be less than 150 characters",
+          }).optional(),
+        startDate: z.date().optional(),
+        endDate: z.date().optional(),
+        isEndPresent: z.boolean().optional(),
+        bullets: z.array(BulletSchema),
+      })
+      .refine(
+        (data) =>
+          data.isEndPresent || (data.endDate && data.startDate && data.endDate > data.startDate) || (!data.endDate && !data.startDate),
+        {
+          message: "End date cannot be earlier than start date.",
+          path: ["endDate"],
+        }
+      )
   ),
 });
 

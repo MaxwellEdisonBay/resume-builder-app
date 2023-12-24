@@ -11,6 +11,8 @@ export interface ContentRs {
   educationGpa?: number;
   educationDegreeLevel?: EducationDegreeLevel;
   educationMajorName?: string;
+  githubUrl?: string,
+  websiteUrl?:string,
   location?: string;
   bullets?: Bullet[];
 }
