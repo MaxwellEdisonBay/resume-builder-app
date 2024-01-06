@@ -6,6 +6,7 @@ export interface SectionRs {
   title?: string;
   type: SectionTypes;
   userId: string;
+  resumeId: string,
   newAdded?: boolean;
   content?: ContentRs[];
   createdAt?: string;

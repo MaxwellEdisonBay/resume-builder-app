@@ -1,32 +1,19 @@
-import Section from "@models/dto/section";
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
-import { BaseDeleteById, Section as SectionType } from "@models/domain/Section";
+import { Resume as ResumeType } from "@models/domain/Resume";
+import { BaseDeleteById } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
-// import { Section as SectionType } from "@components/sections/TestComponent";
+import Resume from "@models/dto/resume";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { authOptions } from "../auth/[...nextauth]/route";
 
-// export const dynamic = 'force-dynamic'
-
-// Gets all sections related to a specific user
+// Gets all resumes related to a specific user
 export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
-  // console.log(request.nextUrl)
-  const resumeId = request.nextUrl.searchParams.get("resumeId");
-  // console.log({resumeId})
-  if (!resumeId) {
-    const errorResponse: BaseErrorResponse = {
-      message: "resumeId query param is missing!",
-    };
-    return new NextResponse(JSON.stringify(errorResponse), {
-      status: 400,
-    });
-  }
   try {
-    const sections: SectionType[] = await Section.find({
+    const sections: ResumeType[] = await Resume.find({
       userId: session?.user.id,
-      resumeId: resumeId,
     });
+    console.log(sections);
     return new NextResponse(JSON.stringify(sections), {
       status: 200,
     });
@@ -44,13 +31,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Creates a new section
+// Creates a new resume
 export async function PUT(request: NextRequest) {
   try {
-    const newSection: SectionType = await request.json();
+    const newResume: ResumeType = await request.json();
     // console.log(session?.user);
-    console.log({ newSection });
-    const result = await Section.create(newSection);
+    console.log({ newResume });
+    const result = await Resume.create(newResume);
     console.log({ result });
     if (result) {
       return new NextResponse(JSON.stringify(result), {
@@ -58,7 +45,7 @@ export async function PUT(request: NextRequest) {
       });
     } else {
       const errorResponse: BaseErrorResponse = {
-        message: "Could not create a new database section entry.",
+        message: "Could not create a new database resume entry.",
       };
       return new NextResponse(JSON.stringify(errorResponse), {
         status: 500,
@@ -82,21 +69,21 @@ export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
   try {
     const deleteReq: BaseDeleteById = await request.json();
-    const section: SectionType | null = await Section.findById(deleteReq.id);
-    if (!section) {
+    const resume: ResumeType | null = await Resume.findById(deleteReq.id);
+    if (!resume) {
       return new NextResponse(
         JSON.stringify({
-          message: "Could not find the section by provided id",
+          message: "Could not find the resume by provided id",
         }),
         {
           status: 400,
         }
       );
     }
-    if (section.userId !== session?.user.id) {
+    if (resume.userId !== session?.user.id) {
       return new NextResponse(
         JSON.stringify({
-          message: "Deleting sections of other users is not allowed",
+          message: "Deleting resumes of other users is not allowed",
         }),
         {
           status: 403,
@@ -104,7 +91,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const result = await Section.findByIdAndDelete(deleteReq.id);
+    const result = await Resume.findByIdAndDelete(deleteReq.id);
     console.log({ result });
     if (result) {
       return new NextResponse(JSON.stringify(result), {
@@ -112,7 +99,7 @@ export async function DELETE(request: NextRequest) {
       });
     } else {
       return new NextResponse(
-        JSON.stringify({ message: "Failed to delete section in the database" }),
+        JSON.stringify({ message: "Failed to delete resume in the database" }),
         {
           status: 500,
         }
@@ -132,16 +119,16 @@ export async function DELETE(request: NextRequest) {
   }
 }
 
-// Updates section data
+// Updates resume data
 export async function POST(request: NextRequest) {
   try {
-    const updatedSection: SectionType = await request.json();
+    const updatedResume: ResumeType = await request.json();
     // console.log(session?.user);
-    console.log({ updatedSection });
-    const result = await Section.findByIdAndUpdate(updatedSection._id, {
-      title: updatedSection.title,
-      content: updatedSection.content,
-    });
+    console.log({ updatedResume });
+    const result = await Resume.findByIdAndUpdate(
+      updatedResume._id,
+      updatedResume
+    );
     console.log({ result });
     // const result = await Section.create(newSection);
     // console.log({ result });
@@ -151,7 +138,7 @@ export async function POST(request: NextRequest) {
       });
     } else {
       const errorResponse: BaseErrorResponse = {
-        message: "Could not create a new database section entry.",
+        message: "Could not create a new database resume entry.",
       };
       return new NextResponse(JSON.stringify(errorResponse), {
         status: 500,

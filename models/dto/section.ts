@@ -65,6 +65,10 @@ const SectionSchema = new Schema<Section>(
       type: String,
       required: [true, "Section userId is required!"],
     },
+    resumeId: {
+      type: String,
+      required: [true, "Section resumeId is required!"],
+    },
     type: {
       type: String,
       enum: ["work", "education", "skills", "projects"],

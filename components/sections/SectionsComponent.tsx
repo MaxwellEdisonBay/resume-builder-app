@@ -23,7 +23,17 @@ import { BaseDeleteById, Section, SectionTypes } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
 import { SectionSchemas, getSectionSchema } from "@utils/inputSchemas";
 import cloneDeep from "lodash.clonedeep";
-import { Briefcase, FileCheck2, FileEdit, Folder, GitBranchPlus, GraduationCap, Lightbulb, Undo, X } from "lucide-react";
+import {
+  Briefcase,
+  FileCheck2,
+  FileEdit,
+  Folder,
+  GitBranchPlus,
+  GraduationCap,
+  Lightbulb,
+  Undo,
+  X,
+} from "lucide-react";
 import mongoose from "mongoose";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import {
@@ -40,54 +50,27 @@ import DeleteDialogButton from "./DeleteDialogButton";
 import ContentForm from "./content-forms/ContentForms";
 import AddSectionSelect from "./new/AddSectionSelect";
 
-export interface TestComponentProps {
+export interface SectionComponentProps {
   userId: string;
+  resumeId: string;
   sections: Section[];
-  setSections: Dispatch<SetStateAction<Section[]>>;
+  setSections: Dispatch<SetStateAction<Section[] | undefined>>;
+  handleSectionAdd: (section: SectionTypes) => void;
 }
 
 const SectionsComponent = ({
   userId,
+  resumeId,
   sections,
   setSections,
-}: TestComponentProps) => {
+  handleSectionAdd,
+}: SectionComponentProps) => {
   const [isSectionReorder, setSectionReorder] = useState(false);
   const reorder = (list: Section[], startIndex: number, endIndex: number) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
     return result;
-  };
-
-  const getDefaultSectionName = (type: SectionTypes) => {
-    const defaultNames: Record<SectionTypes, string> = {
-      work: "Work Experience",
-      education: "Education",
-      skills: "Skills",
-      projects: "Projects",
-    };
-    return defaultNames[type];
-  };
-
-  const handleSectionAdd = (sectionType: SectionTypes) => {
-    const newSection: Section = {
-      userId,
-      _id: new mongoose.Types.ObjectId().toString(),
-      type: sectionType,
-      title: getDefaultSectionName(sectionType),
-      newAdded: true,
-      content: [
-        {
-          _id: new mongoose.Types.ObjectId().toString(),
-          title: "",
-        },
-      ],
-    };
-    setSections((oldSections) => {
-      const newSections = cloneDeep(oldSections);
-      newSections.push(newSection);
-      return newSections;
-    });
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -137,7 +120,9 @@ const SectionsComponent = ({
             </div>
           )}
         </Droppable>
-        <AddSectionSelect onSectionSelect={handleSectionAdd} />
+        <div className="flex flex-row justify-between">
+          <AddSectionSelect onSectionSelect={handleSectionAdd} />
+        </div>
       </DragDropContext>
     </div>
   );
@@ -150,7 +135,7 @@ const Section = ({
   isSectionReorder,
 }: {
   section: Section;
-  setSections: React.Dispatch<React.SetStateAction<Section[]>>;
+  setSections: React.Dispatch<React.SetStateAction<Section[] | undefined>>;
   dragHandleProps: DraggableProvidedDragHandleProps | null;
   isSectionReorder: boolean;
 }) => {
@@ -201,7 +186,7 @@ const Section = ({
     }
     if (resultSectionRs) {
       setSections((oldSections) => {
-        const newSections = cloneDeep(oldSections).map((s) =>
+        const newSections = cloneDeep(oldSections)?.map((s) =>
           s._id === updatedSection._id
             ? {
                 ...updatedSection,
@@ -243,7 +228,7 @@ const Section = ({
     } else {
       setLoading(true);
       try {
-        const response = await fetch(`api/sections`, {
+        const response = await fetch(`/api/sections`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ id: section._id } as BaseDeleteById),
@@ -272,14 +257,14 @@ const Section = ({
 
   const removeSectionFromCache = () => {
     setSections((oldSections) =>
-      cloneDeep(oldSections).filter((s) => s._id !== section._id)
+      cloneDeep(oldSections)?.filter((s) => s._id !== section._id)
     );
   };
 
   const addNewSection = async (newSection: Section) => {
     try {
       setLoading(true);
-      const response = await fetch(`api/sections`, {
+      const response = await fetch(`/api/sections`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newSection),
@@ -301,7 +286,7 @@ const Section = ({
   const updateSection = async (updatedSection: Section) => {
     try {
       setLoading(true);
-      const response = await fetch(`api/sections`, {
+      const response = await fetch(`/api/sections`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedSection),
@@ -328,9 +313,9 @@ const Section = ({
       work: <GraduationCap className="h-5 w-5" />,
       projects: <Lightbulb className="h-5 w-5" />,
       skills: <Folder className="h-5 w-5" />,
-    } as const
-    return sectionIcons[section.type]
-  }
+    } as const;
+    return sectionIcons[section.type];
+  };
 
   return (
     <Form {...form}>
@@ -362,7 +347,7 @@ const Section = ({
                 />
               ) : (
                 <div className="flex flex-row gap-3 items-center">
-                  <SectionIcon/>
+                  <SectionIcon />
                   <h1 className="text-lg font-bold">{section.title}</h1>
                 </div>
               )}
@@ -443,7 +428,7 @@ const SectionContent = ({
   loading,
 }: {
   section: Section;
-  setSections: React.Dispatch<React.SetStateAction<Section[]>>;
+  setSections: React.Dispatch<React.SetStateAction<Section[] | undefined>>;
   editing: boolean;
   form: UseFormReturn<z.infer<SectionSchemas>, any>;
   formControl: Control<z.infer<SectionSchemas>, any>;
@@ -488,8 +473,8 @@ const SectionContent = ({
     work: "Add work experience",
     skills: "Add skills",
     projects: "Add a project",
-    education: "Add education"
-  }
+    education: "Add education",
+  };
 
   return (
     <div className="flex flex-col">
@@ -523,7 +508,7 @@ const SectionContent = ({
                           formControl={formControl}
                           formWatch={formWatch}
                           sectionType={section.type}
-                          content={cont}
+                          content={cont as Content}
                           index={index}
                         />
                         {isNotLastContent && (

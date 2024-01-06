@@ -1,35 +1,45 @@
 import Section from "@models/dto/section";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/route";
 import { BaseDeleteById, Section as SectionType } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
+import { TemplateServer } from "@models/domain/Template";
+import Template from "@models/dto/template";
+import mongoose from "mongoose";
 // import { Section as SectionType } from "@components/sections/TestComponent";
 
 // export const dynamic = 'force-dynamic'
 
-// Gets all sections related to a specific user
-export async function GET(request: NextRequest) {
+// Gets a specific template by its ID available for a user
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { templateId: string } }
+) {
   const session = await getServerSession(authOptions);
-  // console.log(request.nextUrl)
-  const resumeId = request.nextUrl.searchParams.get("resumeId");
-  // console.log({resumeId})
-  if (!resumeId) {
+  const templateId = params.templateId;
+  if (!mongoose.Types.ObjectId.isValid(templateId)) {
     const errorResponse: BaseErrorResponse = {
-      message: "resumeId query param is missing!",
+      message: `${templateId} is not a valid templateId!`,
     };
     return new NextResponse(JSON.stringify(errorResponse), {
       status: 400,
     });
   }
   try {
-    const sections: SectionType[] = await Section.find({
-      userId: session?.user.id,
-      resumeId: resumeId,
-    });
-    return new NextResponse(JSON.stringify(sections), {
-      status: 200,
-    });
+    const template: TemplateServer | null = await Template.findById(templateId);
+    if (template) {
+      return new NextResponse(JSON.stringify(template), {
+        status: 200,
+      });
+    } else {
+      const errorResponse: BaseErrorResponse = {
+        message: `Template with id ${templateId} does not exist!`,
+      };
+      return new NextResponse(JSON.stringify(errorResponse), {
+        status: 404,
+      });
+    }
   } catch (e) {
     let errorMessage = "Unknown error occurred.";
     if (e instanceof Error) {
@@ -45,12 +55,24 @@ export async function GET(request: NextRequest) {
 }
 
 // Creates a new section
-export async function PUT(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { templateId: string } }
+) {
+  const templateId = params.templateId;
+  if (!mongoose.Types.ObjectId.isValid(templateId)) {
+    const errorResponse: BaseErrorResponse = {
+      message: `${templateId} is not a valid templateId!`,
+    };
+    return new NextResponse(JSON.stringify(errorResponse), {
+      status: 400,
+    });
+  }
   try {
-    const newSection: SectionType = await request.json();
+    const newTemplate: TemplateServer = await request.json();
     // console.log(session?.user);
-    console.log({ newSection });
-    const result = await Section.create(newSection);
+    console.log({ newTemplate: newTemplate });
+    const result = await Template.create(newTemplate);
     console.log({ result });
     if (result) {
       return new NextResponse(JSON.stringify(result), {
@@ -58,7 +80,7 @@ export async function PUT(request: NextRequest) {
       });
     } else {
       const errorResponse: BaseErrorResponse = {
-        message: "Could not create a new database section entry.",
+        message: "Could not create a new database template entry.",
       };
       return new NextResponse(JSON.stringify(errorResponse), {
         status: 500,
