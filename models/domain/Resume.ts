@@ -8,4 +8,7 @@ export interface Resume {
     pdfOutputBinary?: string,
     sampleId?: string,
     updatedAt?: string,
+    downloads?: {
+        pdf?: string
+    }
 }

@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from "@components/ui/select";
 import { cn } from "@lib/utils";
-import { workTypesNames } from "@models/domain/Content";
 import { WorkFormSchema } from "@utils/inputSchemas";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,6 +31,7 @@ import { Control } from "react-hook-form";
 import { z } from "zod";
 import Bullets from "../../Bullets";
 import { BaseContentFormProps } from "../types";
+import { workTypesNames } from "@utils/textUtils";
 
 export const WorkContentForm = ({
   content,

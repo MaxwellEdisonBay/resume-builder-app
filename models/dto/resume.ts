@@ -21,6 +21,11 @@ const ResumeSchema = new Schema<Resume>(
     sampleId: {
       type: String,
     },
+    downloads: {
+      pdf: {
+        type: String
+      }
+    }
   },
   { timestamps: true }
 );

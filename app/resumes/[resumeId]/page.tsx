@@ -25,6 +25,7 @@ import mongoose from "mongoose";
 import cloneDeep from "lodash.clonedeep";
 import SectionCardSkeleton from "@components/sections/SectionCardSkeleton";
 import Link from "next/link";
+import { getDefaultSectionName } from "@utils/textUtils";
 
 const BuildResume = ({ params }: { params: { resumeId: string } }) => {
   const { data: session } = useSession();
@@ -49,16 +50,6 @@ const BuildResume = ({ params }: { params: { resumeId: string } }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const getDefaultSectionName = (type: SectionTypes) => {
-    const defaultNames: Record<SectionTypes, string> = {
-      work: "Work Experience",
-      education: "Education",
-      skills: "Skills",
-      projects: "Projects",
-    };
-    return defaultNames[type];
   };
 
   const handleSectionAdd = (sectionType: SectionTypes) => {

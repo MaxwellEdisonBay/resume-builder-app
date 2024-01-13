@@ -11,37 +11,36 @@ import { Document, Page } from "react-pdf";
 import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
 import Image from "next/image";
 import { Separator } from "@components/ui/separator";
+import { usePathname, useSearchParams } from "next/navigation";
+import Lottie from "lottie-react";
+import pdfLoadingAnimation from "@public/assets/animations/documentAnimation.json";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
   import.meta.url
 ).toString();
 
-const ResumePreviewPage = () => {
+const ResumePreviewPage = ({ params }: { params: { resumeId: string } }) => {
   const [numPages, setNumPages] = useState<number>();
   const [pdfString, setPdfString] = useState("");
   const [pageNumber, setPageNumber] = useState<number>(1);
+  const [loading, setLoading] = useState(false);
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
   }
   const onTest = async () => {
     try {
-      const response = await fetch(`/api/resume`);
+      setLoading(true);
+      const response = await fetch(`/api/resumes/${params.resumeId}/downloads`);
+      // console.log(await response.json())
       const blob = await response.blob();
-      const filename = response.headers
-        .get("Content-Disposition")
-        ?.split("filename=")[1];
-      let base64String: string;
-
       let reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
-        base64String = reader.result ? (reader.result as string) : "";
+        const base64String = reader.result ? (reader.result as string) : "";
         setPdfString(base64String.substring(base64String.indexOf(",") + 1));
+        setLoading(false);
       };
-      // saveAs(blob, filename || "Resume.pdf")
-      // const sectionsRs = await response.json();
-      console.log(response.headers);
     } catch (e) {
       const message =
         e instanceof Error
@@ -97,8 +96,7 @@ const ResumePreviewPage = () => {
   ];
 
   //   const { height, width } = useWindowDimensions();
-  const selectedTemplateRef = useRef<HTMLHeadingElement>(null)
-
+  const selectedTemplateRef = useRef<HTMLHeadingElement>(null);
 
   const pdfPreviewRef = useRef<HTMLHeadingElement>(null);
   const [testWidth, setWidth] = useState(0);
@@ -121,11 +119,11 @@ const ResumePreviewPage = () => {
 
   useEffect(() => {
     selectedTemplateRef?.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: "center",
-        inline: 'nearest',
-      })
-  }, [])
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest",
+    });
+  }, []);
 
   return (
     <div className="flex flex-col">
@@ -134,7 +132,10 @@ const ResumePreviewPage = () => {
           <ScrollArea className="h-[90vh] rounded-md gap-3">
             <div className="flex flex-col gap-3">
               {templateData.map((t) => (
-                <Card key={t.name} ref={t._id === "id5" ? selectedTemplateRef : null}>
+                <Card
+                  key={t.name}
+                  ref={t._id === "id5" ? selectedTemplateRef : null}
+                >
                   <CardHeader>{t.name}</CardHeader>
                   <CardContent>
                     <Image
@@ -159,24 +160,37 @@ const ResumePreviewPage = () => {
             >
               <ScrollArea className="rounded-md border justify-center h-[90vh] w-full">
                 {Array.from(Array(numPages).keys()).map((num) => (
-                  <>
+                  <div key={num}>
                     <Page
                       // scale={width / 1000}
                       width={testWidth}
                       className="flex justify-center"
-                      key={num}
+                      // key={num}
                       pageNumber={num + 1}
                       // height={height}
                       // width={width/2}
                     />
                     <Separator />
-                  </>
+                  </div>
                 ))}
               </ScrollArea>
             </Document>
           ) : (
-            <Card className="flex h-[90vh] w-full">
-              <CardContent>Loading</CardContent>
+            <Card className="flex h-[90vh] w-full items-center justify-center">
+              <CardContent>
+                {loading && (
+                  <div className="flex flex-col w-full justify-center items-center self-center">
+                    <Lottie
+                      animationData={pdfLoadingAnimation}
+                      className="flex justify-center items-center"
+                      loop={true}
+                    />
+                    <h1 className="text-xl text-gray-600 sm:text-2xl max-w-2xl text-center">
+                      Rendering the resume...
+                    </h1>
+                  </div>
+                )}
+              </CardContent>
             </Card>
           )}
         </div>

@@ -55,7 +55,7 @@ const ResumeListPage = () => {
   const fetchResumes = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`api/resumes`);
+      const response = await fetch(`/api/resumes`);
       const resumesRs: Resume[] = await response.json();
       setResumes(resumesRs);
     } catch (e) {
@@ -82,7 +82,7 @@ const ResumeListPage = () => {
       const deleteId: BaseDeleteById = {
         id: id || "",
       };
-      const response = await fetch(`api/resumes`, {
+      const response = await fetch(`/api/resumes`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(deleteId),
@@ -120,7 +120,7 @@ const ResumeListPage = () => {
         userId: session?.user.id || "",
         sections: [],
       };
-      const response = await fetch(`api/resumes`, {
+      const response = await fetch(`/api/resumes`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newResume),

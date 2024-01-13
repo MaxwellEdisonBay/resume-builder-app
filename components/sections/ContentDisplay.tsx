@@ -1,9 +1,9 @@
 import { Badge } from "@components/ui/badge";
 import { Card, CardContent } from "@components/ui/card";
-import { EducationDegreeLevel } from "@models/api/ContentRs";
-import { Content, workTypesNames } from "@models/domain/Content";
+import { Content } from "@models/domain/Content";
 import { SectionTypes } from "@models/domain/Section";
 import { getRndColorFromString } from "@utils/formHelpers";
+import { shortDegreeLevels, workTypesNames } from "@utils/textUtils";
 import { Github, Link as LinkIcon } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
@@ -63,38 +63,7 @@ const EducationContentDisplay = ({ content }: BaseContentDisplayProps) => {
   const end = content?.endDate
     ? moment(content?.endDate).format("MMM YYYY")
     : "Present";
-  const shortDegreeLevels: Record<EducationDegreeLevel, string> = {
-    aa: "AA",
-    as: "AS",
-    aas: "AAS",
-    ba: "BA",
-    bs: "BS",
-    baa: "BAA",
-    bas: "BAS",
-    barch: "B.Arch.",
-    bba: "BBA",
-    bfa: "BFA",
-    bsn: "BSN",
-    ma: "MA",
-    ms: "MS",
-    mba: "MBA",
-    med: "M.Ed.",
-    mfa: "MFA",
-    llm: "LL.M.",
-    mpa: "MPA",
-    mph: "MPH",
-    mpp: "MPP",
-    msn: "MSN",
-    msw: "MSW",
-    phd: "Ph.D.",
-    dba: "DBA",
-    edd: "Ed.D.",
-    md: "MD",
-    dnp: "DNP",
-    pharmd: "Pharm.D.",
-    psyd: "Psy.D.",
-    jd: "JD",
-  } as const;
+
   const shordDegreeLevel =
     content?.educationDegreeLevel &&
     shortDegreeLevels[content.educationDegreeLevel];
@@ -168,10 +137,9 @@ const ProjectsContentDisplay = ({ content }: BaseContentDisplayProps) => {
                   <Link href={content.githubUrl} passHref={true}>
                     <Badge variant="outline">
                       <div className="flex flex-row items-center">
-                      <Github className="w-4 h-4 mr-2" />
-                      <p>GitHub</p>
+                        <Github className="w-4 h-4 mr-2" />
+                        <p>GitHub</p>
                       </div>
-                      
                     </Badge>
                   </Link>
                 </>
@@ -181,10 +149,9 @@ const ProjectsContentDisplay = ({ content }: BaseContentDisplayProps) => {
                   <Link href={content.websiteUrl} passHref={true}>
                     <Badge variant="outline">
                       <div className="flex flex-row items-center ">
-                      <LinkIcon className="w-4 h-4 mr-2" />
-                      <p>Website</p>
+                        <LinkIcon className="w-4 h-4 mr-2" />
+                        <p>Website</p>
                       </div>
-                      
                     </Badge>
                   </Link>
                 </>

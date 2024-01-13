@@ -88,6 +88,8 @@ const SectionsComponent = ({
     setSections(items);
   };
 
+  const handleResumeInvalidate = async () => {};
+
   return (
     <div>
       <DragDropContext onDragEnd={onDragEnd}>
@@ -111,6 +113,7 @@ const SectionsComponent = ({
                         setSections={setSections}
                         dragHandleProps={provided.dragHandleProps}
                         isSectionReorder={isSectionReorder}
+                        resumeId={resumeId}
                       />
                     </div>
                   )}
@@ -133,11 +136,13 @@ const Section = ({
   setSections,
   dragHandleProps,
   isSectionReorder,
+  resumeId,
 }: {
   section: Section;
   setSections: React.Dispatch<React.SetStateAction<Section[] | undefined>>;
   dragHandleProps: DraggableProvidedDragHandleProps | null;
   isSectionReorder: boolean;
+  resumeId: string;
 }) => {
   const [editing, setEditing] = useState(!!section.newAdded);
   const [loading, setLoading] = useState(false);
@@ -212,6 +217,15 @@ const Section = ({
     }
   };
 
+  const makeInvalidateCall = async () => {
+    const response = await fetch(`/api/resumes/${resumeId}/invalidate`, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      toast.error("Failed to invalidate generated PDF after resume change.");
+    }
+  };
+
   const resetFormAndClose = (updatedSection: Section = section) => {
     form.reset({
       title: updatedSection.title,
@@ -228,6 +242,7 @@ const Section = ({
     } else {
       setLoading(true);
       try {
+        await makeInvalidateCall();
         const response = await fetch(`/api/sections`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -264,6 +279,7 @@ const Section = ({
   const addNewSection = async (newSection: Section) => {
     try {
       setLoading(true);
+      await makeInvalidateCall();
       const response = await fetch(`/api/sections`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -286,6 +302,7 @@ const Section = ({
   const updateSection = async (updatedSection: Section) => {
     try {
       setLoading(true);
+      await makeInvalidateCall();
       const response = await fetch(`/api/sections`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

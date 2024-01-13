@@ -11,10 +11,3 @@ export interface Bullet {
   _id: string;
   text: string;
 }
-
-export const workTypesNames: Record<WorkTypes, string> = {
-  "full-time": "Full-time",
-  hybrid: "Hybrid",
-  "part-time": "Part-time",
-  remote: "Remote",
-};

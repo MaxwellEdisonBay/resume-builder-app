@@ -24,7 +24,6 @@ import {
   SelectValue,
 } from "@components/ui/select";
 import { cn } from "@lib/utils";
-import { workTypesNames } from "@models/domain/Content";
 import { ProjectsFormSchema, WorkFormSchema } from "@utils/inputSchemas";
 import { CalendarIcon } from "lucide-react";
 import { useEffect, useState } from "react";
