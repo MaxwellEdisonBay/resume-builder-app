@@ -19,7 +19,7 @@ import { Input } from "@components/ui/input";
 import { Skeleton } from "@components/ui/skeleton";
 import { IUser } from "@models/domain/IUser";
 import { showToast } from "@utils/toast";
-import { PencilRuler } from "lucide-react";
+import { Loader2, PencilRuler } from "lucide-react";
 import { useEffect } from "react";
 import LoadingInput from "./components/LoadingInput";
 
@@ -112,10 +112,15 @@ const profileFormAllEntries = Object.values(test);
 
 export interface ProfileFormProps {
   profileData?: IUser;
+  loading: boolean;
   onUpdate: (data: ProfileFormValues) => void;
 }
 
-export function ProfileForm({ profileData, onUpdate }: ProfileFormProps) {
+export function ProfileForm({
+  profileData,
+  loading,
+  onUpdate,
+}: ProfileFormProps) {
   // const [edit, setEdit] = useState(false);
   // console.log({ profileData });
 
@@ -415,9 +420,10 @@ export function ProfileForm({ profileData, onUpdate }: ProfileFormProps) {
         {/* {edit ? ( */}
         <Button
           className="bg-green-600 hover:bg-green-700"
-          disabled={!isFormDirty}
+          disabled={!isFormDirty || loading}
           type="submit"
         >
+          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Update profile
         </Button>
         {/* ) : (

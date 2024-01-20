@@ -10,6 +10,7 @@ import { ProfileForm, ProfileFormValues } from "./profile-form";
 export default function SettingsProfilePage() {
   const [profileData, setProfileData] = useState<IUser | undefined>();
   const [error, setError] = useState(false);
+  const [updatingProfile, setUpdatingProfile] = useState(false)
 
   useEffect(() => {
     const fetchUserProfileData = async () => {
@@ -41,6 +42,7 @@ export default function SettingsProfilePage() {
 
   const handleUpdate = async (data: ProfileFormValues) => {
     try {
+      setUpdatingProfile(true)
       const response = await fetch(`api/profile`, {
         body: JSON.stringify(data),
         method: "POST",
@@ -64,6 +66,8 @@ export default function SettingsProfilePage() {
           ? e.message
           : "Exception occurred while fetching profile data.";
       showToast({ message, type: "error" });
+    } finally {
+      setUpdatingProfile(false)
     }
   };
 
@@ -79,7 +83,7 @@ export default function SettingsProfilePage() {
       </div>
       <ServerSeparator />
 
-      <ProfileForm profileData={profileData} onUpdate={handleUpdate} />
+      <ProfileForm loading={updatingProfile} profileData={profileData} onUpdate={handleUpdate} />
  
     </div>
   );
