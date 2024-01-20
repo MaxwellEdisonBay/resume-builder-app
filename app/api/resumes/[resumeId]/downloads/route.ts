@@ -158,12 +158,13 @@ export async function GET(
         })
       );
       await rimraf(tempDirPath);
+      console.log("Removed " + tempDirPath);
+
       await ResumeModel.findByIdAndUpdate(params.resumeId, {
         downloads: {
           pdf: bucketFileName,
         },
       });
-      console.log("Removed " + tempDirPath);
     }
 
     const getCommand = new GetObjectCommand({

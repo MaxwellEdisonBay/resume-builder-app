@@ -7,6 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@components/ui/dropdown-menu";
 import { SectionTypes } from "@models/domain/Section";
+import { getDefaultSectionName } from "@utils/textUtils";
 import {
   Briefcase,
   FilePlus2,
@@ -15,12 +16,17 @@ import {
   Lightbulb,
 } from "lucide-react";
 import React from "react";
+import { SectionIcon } from "../SectionIcon";
 
 export interface AddSectionSelectProps {
+  sectionsTypesAvailable: SectionTypes[];
   onSectionSelect: (sectionType: SectionTypes) => void;
 }
 
-const AddSectionSelect = ({ onSectionSelect }: AddSectionSelectProps) => {
+const AddSectionSelect = ({
+  sectionsTypesAvailable,
+  onSectionSelect,
+}: AddSectionSelectProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,7 +37,13 @@ const AddSectionSelect = ({ onSectionSelect }: AddSectionSelectProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="min-w-[200px]">
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => onSectionSelect("work")}>
+          {sectionsTypesAvailable.map((t) => (
+            <DropdownMenuItem key={t} onClick={() => onSectionSelect(t)}>
+              <SectionIcon type={t} className="mr-2 h-4 w-4" />
+              <span>{getDefaultSectionName(t)}</span>
+            </DropdownMenuItem>
+          ))}
+          {/* <DropdownMenuItem onClick={() => onSectionSelect("work")}>
             <Briefcase className="mr-2 h-4 w-4" />
             <span>Work Experience</span>
           </DropdownMenuItem>
@@ -46,7 +58,7 @@ const AddSectionSelect = ({ onSectionSelect }: AddSectionSelectProps) => {
           <DropdownMenuItem onClick={() => onSectionSelect("projects")}>
             <Folder className="mr-2 h-4 w-4" />
             <span>Projects</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

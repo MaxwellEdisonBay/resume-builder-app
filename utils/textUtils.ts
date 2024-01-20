@@ -1,6 +1,7 @@
 import { EducationDegreeLevel } from "@models/api/ContentRs";
 import { WorkTypes } from "@models/domain/Content";
 import { SectionTypes } from "@models/domain/Section";
+import { Briefcase } from "lucide-react";
 
 export const getDefaultSectionName = (type: SectionTypes) => {
   const defaultNames: Record<SectionTypes, string> = {
@@ -11,6 +12,13 @@ export const getDefaultSectionName = (type: SectionTypes) => {
   };
   return defaultNames[type];
 };
+
+export const sectionTypesList: SectionTypes[] = [
+  "education",
+  "projects",
+  "skills",
+  "work",
+];
 
 export const shortDegreeLevels: Record<EducationDegreeLevel, string> = {
   aa: "AA",
@@ -83,10 +91,9 @@ export const degrees: DegreesMap[] = [
   { label: "Juris Doctor (JD)", value: "jd" },
 ] as const;
 
-
 export const workTypesNames: Record<WorkTypes, string> = {
-    "full-time": "Full-time",
-    hybrid: "Hybrid",
-    "part-time": "Part-time",
-    remote: "Remote",
-  };
+  "full-time": "Full-time",
+  hybrid: "Hybrid",
+  "part-time": "Part-time",
+  remote: "Remote",
+};

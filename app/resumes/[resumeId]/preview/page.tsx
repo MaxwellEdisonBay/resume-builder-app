@@ -28,6 +28,33 @@ const ResumePreviewPage = ({ params }: { params: { resumeId: string } }) => {
   function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
     setNumPages(numPages);
   }
+
+
+  useEffect(() => {
+    const fetchResumePdf = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/resumes/${params.resumeId}/downloads`);
+        // console.log(await response.json())
+        const blob = await response.blob();
+        let reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = () => {
+          const base64String = reader.result ? (reader.result as string) : "";
+          setPdfString(base64String.substring(base64String.indexOf(",") + 1));
+          setLoading(false);
+        };
+      } catch (e) {
+        const message =
+          e instanceof Error
+            ? e.message
+            : "Exception occurred while loading sections";
+        showToast({ message, type: "error" });
+      }
+    }
+    fetchResumePdf()
+  }, [])
+
   const onTest = async () => {
     try {
       setLoading(true);

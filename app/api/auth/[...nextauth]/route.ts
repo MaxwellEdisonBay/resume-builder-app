@@ -16,7 +16,6 @@ export const authOptions: AuthOptions = {
         email: session.user?.email,
       });
       session.user.id = sessionUser._id.toString();
-      
 
       return session;
     },
@@ -30,12 +29,18 @@ export const authOptions: AuthOptions = {
         });
         if (!userExists) {
           //if not, create a new user
-        //   console.log({profile})
-        //   console.log({user})
+          //   console.log({profile})
+          //   console.log({user})
+          const nameList = profile?.name?.split(" ");
+          const firstName = nameList?.at(0);
+          const lastName = nameList?.at(1);
           await User.create({
             email: profile?.email,
             username: profile?.name?.replace(" ", "").toLowerCase(),
             image: profile?.picture,
+            firstName,
+            lastName,
+            displayEmail: profile?.email,
           });
         }
 
@@ -46,7 +51,7 @@ export const authOptions: AuthOptions = {
       }
     },
   },
-}
+};
 
 const handler = NextAuth(authOptions);
 

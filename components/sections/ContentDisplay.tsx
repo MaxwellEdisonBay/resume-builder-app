@@ -129,32 +129,28 @@ const ProjectsContentDisplay = ({ content }: BaseContentDisplayProps) => {
     <Card className="mb-3 w-full" key={content?._id}>
       <CardContent className="p-5 w-full">
         <div className="flex flex-row justify-between w-full flex-wrap">
-          <div className="flex flex-row gap-3 flex-wrap">
+          <div className="flex flex-row gap-3 flex-wrap items-center justify-center">
             <h2 className="font-medium">{`${content?.title}`}</h2>
-            <div className="flex flex-row items-center gap-1">
+            <div className="flex flex-row items-center gap-1 justify-center">
               {content?.githubUrl && (
-                <>
-                  <Link href={content.githubUrl} passHref={true}>
-                    <Badge variant="outline">
-                      <div className="flex flex-row items-center">
-                        <Github className="w-4 h-4 mr-2" />
-                        <p>GitHub</p>
-                      </div>
-                    </Badge>
-                  </Link>
-                </>
+                <Link href={content.githubUrl} passHref={true}>
+                  <Badge variant="outline">
+                    <div className="flex flex-row items-center">
+                      <Github className="w-4 h-4 mr-2" />
+                      <p>GitHub</p>
+                    </div>
+                  </Badge>
+                </Link>
               )}
               {content?.websiteUrl && (
-                <>
-                  <Link href={content.websiteUrl} passHref={true}>
-                    <Badge variant="outline">
-                      <div className="flex flex-row items-center ">
-                        <LinkIcon className="w-4 h-4 mr-2" />
-                        <p>Website</p>
-                      </div>
-                    </Badge>
-                  </Link>
-                </>
+                <Link href={content.websiteUrl} passHref={true}>
+                  <Badge variant="outline">
+                    <div className="flex flex-row items-center ">
+                      <LinkIcon className="w-4 h-4 mr-2" />
+                      <p>Website</p>
+                    </div>
+                  </Badge>
+                </Link>
               )}
             </div>
           </div>

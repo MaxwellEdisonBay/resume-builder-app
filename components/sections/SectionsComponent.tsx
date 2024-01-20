@@ -49,6 +49,8 @@ import ContentDisplay from "./ContentDisplay";
 import DeleteDialogButton from "./DeleteDialogButton";
 import ContentForm from "./content-forms/ContentForms";
 import AddSectionSelect from "./new/AddSectionSelect";
+import { SectionIcon } from "./SectionIcon";
+import { sectionTypesList } from "@utils/textUtils";
 
 export interface SectionComponentProps {
   userId: string;
@@ -88,7 +90,13 @@ const SectionsComponent = ({
     setSections(items);
   };
 
-  const handleResumeInvalidate = async () => {};
+  const getAvailableSections = () => {
+    const currentSections = sections.map((s) => s.type);
+    return sectionTypesList.filter((t) => !currentSections.includes(t));
+  };
+
+  const sectionsTypesAvailable = getAvailableSections();
+  console.log({ sectionsTypesAvailable });
 
   return (
     <div>
@@ -123,9 +131,14 @@ const SectionsComponent = ({
             </div>
           )}
         </Droppable>
-        <div className="flex flex-row justify-between">
-          <AddSectionSelect onSectionSelect={handleSectionAdd} />
-        </div>
+        {!!sectionsTypesAvailable.length && (
+          <div className="flex flex-row justify-between">
+            <AddSectionSelect
+              sectionsTypesAvailable={sectionsTypesAvailable}
+              onSectionSelect={handleSectionAdd}
+            />
+          </div>
+        )}
       </DragDropContext>
     </div>
   );
@@ -324,16 +337,6 @@ const Section = ({
 
   const shouldShowSaveButton = !(editing && !form.formState.isDirty);
 
-  const SectionIcon = () => {
-    const sectionIcons: Record<SectionTypes, React.ReactNode> = {
-      education: <Briefcase className="h-5 w-5" />,
-      work: <GraduationCap className="h-5 w-5" />,
-      projects: <Lightbulb className="h-5 w-5" />,
-      skills: <Folder className="h-5 w-5" />,
-    } as const;
-    return sectionIcons[section.type];
-  };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onError)}>
@@ -364,7 +367,7 @@ const Section = ({
                 />
               ) : (
                 <div className="flex flex-row gap-3 items-center">
-                  <SectionIcon />
+                  <SectionIcon type={section.type} />
                   <h1 className="text-lg font-bold">{section.title}</h1>
                 </div>
               )}
