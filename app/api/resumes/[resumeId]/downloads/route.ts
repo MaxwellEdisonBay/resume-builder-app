@@ -1,18 +1,13 @@
-import { authOptions } from "@app/api/auth/[...nextauth]/route";
-import {
-  GetObjectCommand,
-  PutObjectCommand
-} from "@aws-sdk/client-s3";
-import {
-  getSignedUrl
-} from "@aws-sdk/s3-request-presigner";
-import { IUser } from "@models/domain/IUser";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { IResume } from "@models/domain/IResume";
+import { IUser } from "@models/domain/IUser";
 import { Section } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
 import ResumeModel from "@models/dto/resume";
 import SectionModel from "@models/dto/section";
 import User from "@models/dto/user";
+import { authOptions } from "@utils/auth/authOptions";
 import { createTexFromSections } from "@utils/latex/samples/compile";
 import { S3_BUCKET_NAME, s3 } from "@utils/s3Bucket";
 import { exec as execCallback } from "child_process";
@@ -116,7 +111,7 @@ export async function GET(
       const sections: Section[] = await SectionModel.find({
         resumeId: params.resumeId,
       });
-      const user: IUser | null = await User.findById(session?.user.id)
+      const user: IUser | null = await User.findById(session?.user.id);
       if (!user) {
         const errorResponse: BaseErrorResponse = {
           message: `User data does not exist.`,

@@ -1,10 +1,9 @@
 import { IResume } from "@models/domain/IResume";
-import { BaseDeleteById } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
 import Resume from "@models/dto/resume";
+import { authOptions } from "@utils/auth/authOptions";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../auth/[...nextauth]/route";
 
 // Gets all resumes related to a specific user
 export async function GET(request: NextRequest) {

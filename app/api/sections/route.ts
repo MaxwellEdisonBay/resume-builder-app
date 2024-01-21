@@ -1,10 +1,9 @@
-import Section from "@models/dto/section";
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
 import { BaseDeleteById, Section as SectionType } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
-import IResume from "@models/dto/resume";
+import Section from "@models/dto/section";
+import { authOptions } from "@utils/auth/authOptions";
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
 // import { Section as SectionType } from "@components/sections/TestComponent";
 
 // export const dynamic = 'force-dynamic'

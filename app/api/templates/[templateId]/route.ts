@@ -1,12 +1,12 @@
-import Section from "@models/dto/section";
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import { BaseDeleteById, Section as SectionType } from "@models/domain/Section";
-import { BaseErrorResponse } from "@models/dto/error";
 import { TemplateServer } from "@models/domain/Template";
+import { BaseErrorResponse } from "@models/dto/error";
+import Section from "@models/dto/section";
 import Template from "@models/dto/template";
+import { authOptions } from "@utils/auth/authOptions";
 import mongoose from "mongoose";
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
 // import { Section as SectionType } from "@components/sections/TestComponent";
 
 // export const dynamic = 'force-dynamic'

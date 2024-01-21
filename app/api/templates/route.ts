@@ -1,11 +1,9 @@
-import Section from "@models/dto/section";
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "../auth/[...nextauth]/route";
-import { BaseDeleteById, Section as SectionType } from "@models/domain/Section";
+import { TemplateServer } from "@models/domain/Template";
 import { BaseErrorResponse } from "@models/dto/error";
 import Template from "@models/dto/template";
-import { TemplateServer } from "@models/domain/Template";
+import { authOptions } from "@utils/auth/authOptions";
+import { getServerSession } from "next-auth/next";
+import { NextRequest, NextResponse } from "next/server";
 
 // Gets all templates available for a user
 export async function GET(request: NextRequest) {

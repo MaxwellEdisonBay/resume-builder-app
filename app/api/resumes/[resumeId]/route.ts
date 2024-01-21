@@ -1,9 +1,9 @@
-import { authOptions } from "@app/api/auth/[...nextauth]/route";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { IResume } from "@models/domain/IResume";
 import { BaseErrorResponse } from "@models/dto/error";
 import Resume from "@models/dto/resume";
 import Section from "@models/dto/section";
+import { authOptions } from "@utils/auth/authOptions";
 import { S3_BUCKET_NAME, s3 } from "@utils/s3Bucket";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
@@ -59,7 +59,9 @@ export async function DELETE(
     });
   }
   try {
-    const deletedResume : IResume | null = await Resume.findByIdAndDelete(resumeId);
+    const deletedResume: IResume | null = await Resume.findByIdAndDelete(
+      resumeId
+    );
     const sectionsDeleteResult = await Section.deleteMany({ resumeId });
     if (deletedResume?.downloads?.pdf) {
       await s3.send(

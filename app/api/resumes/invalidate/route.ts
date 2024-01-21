@@ -1,4 +1,3 @@
-import { authOptions } from "@app/api/auth/[...nextauth]/route";
 import {
   DeleteObjectCommand,
   DeleteObjectsCommand,
@@ -7,6 +6,7 @@ import {
 import { IResume } from "@models/domain/IResume";
 import { BaseErrorResponse } from "@models/dto/error";
 import ResumeModel from "@models/dto/resume";
+import { authOptions } from "@utils/auth/authOptions";
 import { S3_BUCKET_NAME, s3 } from "@utils/s3Bucket";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
