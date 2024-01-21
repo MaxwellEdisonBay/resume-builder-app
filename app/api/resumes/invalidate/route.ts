@@ -1,14 +1,9 @@
-import {
-  DeleteObjectCommand,
-  DeleteObjectsCommand,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
+import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { IResume } from "@models/domain/IResume";
 import { BaseErrorResponse } from "@models/dto/error";
 import ResumeModel from "@models/dto/resume";
 import { authOptions } from "@utils/auth/authOptions";
 import { S3_BUCKET_NAME, s3 } from "@utils/s3Bucket";
-import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 

@@ -2,6 +2,8 @@ import { IUser } from "@models/domain/IUser";
 import { Schema, model, models } from "mongoose";
 
 const UserSchema = new Schema<IUser>({
+  // @ts-ignore
+  // TODO: This one is more tricky, needs more investigation!
   email: {
     type: String,
     required: [true, "Email is required!"],

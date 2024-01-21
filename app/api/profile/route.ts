@@ -1,9 +1,9 @@
-import { authOptions } from "@app/api/auth/[...nextauth]/route";
 import { IUser } from "@models/domain/IUser";
 import { Profile as IProfile } from "@models/domain/Profile";
 import { BaseErrorResponse } from "@models/dto/error";
 import Profile from "@models/dto/profile";
 import User from "@models/dto/user";
+import { authOptions } from "@utils/auth/authOptions";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 

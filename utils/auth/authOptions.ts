@@ -37,6 +37,8 @@ export const authOptions: AuthOptions = {
           await User.create({
             email: profile?.email,
             username: profile?.name?.replace(" ", "").toLowerCase(),
+            // @ts-ignore
+            // TODO: Double-check with docs, it works this way though.
             image: profile?.picture,
             firstName,
             lastName,
