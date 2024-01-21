@@ -8,14 +8,7 @@ import {
 } from "@components/ui/dropdown-menu";
 import { SectionTypes } from "@models/domain/Section";
 import { getDefaultSectionName } from "@utils/textUtils";
-import {
-  Briefcase,
-  FilePlus2,
-  Folder,
-  GraduationCap,
-  Lightbulb,
-} from "lucide-react";
-import React from "react";
+import { FilePlus2 } from "lucide-react";
 import { SectionIcon } from "../SectionIcon";
 
 export interface AddSectionSelectProps {

@@ -1,8 +1,7 @@
-import { Separator } from "@components/ui/separator";
+import { Card } from "@components/ui/card";
 import { Metadata } from "next";
 import Image from "next/image";
 import { SidebarNav } from "./components/sidebar-nav";
-import { Card } from "@components/ui/card";
 
 export const metadata: Metadata = {
   title: "Forms",
@@ -18,18 +17,18 @@ const sidebarNavItems = [
     title: "Account",
     href: "/profile/account",
   },
-//   {
-//     title: "Appearance",
-//     href: "/profile/appearance",
-//   },
-//   {
-//     title: "Notifications",
-//     href: "/profile/notifications",
-//   },
-//   {
-//     title: "Display",
-//     href: "/profile/display",
-//   },
+  //   {
+  //     title: "Appearance",
+  //     href: "/profile/appearance",
+  //   },
+  //   {
+  //     title: "Notifications",
+  //     href: "/profile/notifications",
+  //   },
+  //   {
+  //     title: "Display",
+  //     href: "/profile/display",
+  //   },
 ];
 
 interface SettingsLayoutProps {

@@ -1,6 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@components/ui/card'
+import { Card, CardContent } from '@components/ui/card'
 import { Skeleton } from '@components/ui/skeleton'
-import React from 'react'
 
 const ResumeCardSkeleton = () => {
   return (

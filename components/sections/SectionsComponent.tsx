@@ -22,18 +22,9 @@ import { Content } from "@models/domain/Content";
 import { BaseDeleteById, Section, SectionTypes } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
 import { SectionSchemas, getSectionSchema } from "@utils/inputSchemas";
+import { sectionTypesList } from "@utils/textUtils";
 import cloneDeep from "lodash.clonedeep";
-import {
-  Briefcase,
-  FileCheck2,
-  FileEdit,
-  Folder,
-  GitBranchPlus,
-  GraduationCap,
-  Lightbulb,
-  Undo,
-  X,
-} from "lucide-react";
+import { FileCheck2, FileEdit, GitBranchPlus, Undo, X } from "lucide-react";
 import mongoose from "mongoose";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import {
@@ -47,10 +38,9 @@ import toast from "react-hot-toast";
 import * as z from "zod";
 import ContentDisplay from "./ContentDisplay";
 import DeleteDialogButton from "./DeleteDialogButton";
+import { SectionIcon } from "./SectionIcon";
 import ContentForm from "./content-forms/ContentForms";
 import AddSectionSelect from "./new/AddSectionSelect";
-import { SectionIcon } from "./SectionIcon";
-import { sectionTypesList } from "@utils/textUtils";
 
 export interface SectionComponentProps {
   userId: string;
@@ -468,7 +458,7 @@ const SectionContent = ({
       position: "",
       location: "",
     };
-    append(newContent);
+    append(newContent as (typeof fields)[0]);
   };
 
   const handleRemoveContent = (
