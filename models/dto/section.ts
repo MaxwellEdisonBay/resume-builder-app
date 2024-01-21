@@ -1,15 +1,22 @@
-import { BaseSection } from "@models/domain/Section";
-import { BaseSectionContent } from "@models/domain/SectionContent";
+import { Bullet, Content } from "@models/domain/Content";
+import { Section } from "@models/domain/Section";
 import { Schema, model, models } from "mongoose";
 
-const SectionContentSchema = new Schema<BaseSectionContent>(
+const BulletSchema = new Schema<Bullet>({
+  text: {
+    type: String,
+    // required: [true, "Bullet text is required!"],
+  }
+})
+
+const SectionContentSchema = new Schema<Content>(
   {
     title: {
       type: String,
       required: [true, "Section title is required!"],
     },
     bullets: {
-      type: [String],
+      type: [BulletSchema],
     },
     position: {
       type: String,
@@ -20,7 +27,23 @@ const SectionContentSchema = new Schema<BaseSectionContent>(
     endDate: {
       type: Date,
     },
-    type: {
+    educationGpa: {
+      type: String,
+    },
+    educationDegreeLevel: {
+      type: String,
+    },
+    educationMajorName: {
+      type: String,
+    },
+    githubUrl: {
+      type: String,
+    },
+    websiteUrl: {
+      type: String,
+    },
+
+    workType: {
       type: String,
       enum: ["full-time", "hybrid", "part-time", "remote"],
       default: "full-time",
@@ -32,7 +55,7 @@ const SectionContentSchema = new Schema<BaseSectionContent>(
   { timestamps: true }
 );
 
-const SectionSchema = new Schema<BaseSection>(
+const SectionSchema = new Schema<Section>(
   {
     title: {
       type: String,
@@ -41,6 +64,10 @@ const SectionSchema = new Schema<BaseSection>(
     userId: {
       type: String,
       required: [true, "Section userId is required!"],
+    },
+    resumeId: {
+      type: String,
+      required: [true, "Section resumeId is required!"],
     },
     type: {
       type: String,
@@ -52,6 +79,6 @@ const SectionSchema = new Schema<BaseSection>(
   { timestamps: true }
 );
 
-const Section = models.Section || model<BaseSection>("Section", SectionSchema);
+const Section = models.Section || model<Section>("Section", SectionSchema);
 
 export default Section;

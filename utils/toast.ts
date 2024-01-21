@@ -1,6 +1,6 @@
 import toast, { Toaster } from 'react-hot-toast';
 
-export type ToastTypes = "error" | "success" | "info"
+export type ToastTypes = "error" | "success" | "info" | "loading"
 
 export interface ToastProps {
     message: string,

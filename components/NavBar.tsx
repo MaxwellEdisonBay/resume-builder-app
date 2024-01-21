@@ -50,8 +50,8 @@ const NavBar = () => {
       <div className="sm:flex hidden">
         {session?.user ? (
           <div className="flex gap-3 md:gap-5">
-            <Link href="/build-resume" className="black_btn">
-              Build Resume
+            <Link href="/resumes" className="black_btn">
+              My Resumes
             </Link>
             <button type="button" onClick={() => signOut()} className="outline_btn">
               Sign Out

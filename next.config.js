@@ -4,9 +4,10 @@ const nextConfig = {
     serverComponentsExternalPackages: ["mongoose"],
   },
   images: {
-    domains: ['lh3.googleusercontent.com'],
+    domains: ['lh3.googleusercontent.com', 'fastly.picsum.photos'],
   },
   webpack(config) {
+    config.resolve.alias.canvas = false;
     config.experiments = {
       ...config.experiments,
       topLevelAwait: true,

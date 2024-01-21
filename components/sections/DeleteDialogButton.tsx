@@ -11,14 +11,17 @@ import {
 } from "@components/ui/alert-dialog";
 import { Button } from "@components/ui/button";
 import { Loader2, Trash2 } from "lucide-react";
-import React from "react";
 
 export interface DeleteDialogButtonProps {
   loading: boolean;
   disabled: boolean;
   onDelete: () => void;
 }
-const DeleteDialogButton = ({ loading, disabled, onDelete }: DeleteDialogButtonProps) => {
+const DeleteDialogButton = ({
+  loading,
+  disabled,
+  onDelete,
+}: DeleteDialogButtonProps) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>

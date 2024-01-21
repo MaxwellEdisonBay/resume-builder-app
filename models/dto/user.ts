@@ -1,10 +1,11 @@
+import { IUser } from "@models/domain/IUser";
 import { Schema, model, models } from "mongoose";
 
-const UserSchema = new Schema({
+const UserSchema = new Schema<IUser>({
   email: {
     type: String,
-    unique: [true, "Email already exists!"],
     required: [true, "Email is required!"],
+    unique: [true, "Email already exists!"],
   },
   username: {
     type: String,
@@ -16,9 +17,33 @@ const UserSchema = new Schema({
   },
   image: {
     type: String
-  }
+  },
+  firstName: {
+    type: String,
+  },
+  lastName: {
+    type: String,
+  },
+  displayEmail: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  linkedinUrl: {
+    type: String,
+  },
+  githubUrl: {
+    type: String,
+  },
+  portfolioUrl: {
+    type: String,
+  },
+  location: {
+    type: String,
+  },
 });
 
-const User = models.User || model("User", UserSchema)
+const User = models.User || model<IUser>("User", UserSchema)
 
 export default User
