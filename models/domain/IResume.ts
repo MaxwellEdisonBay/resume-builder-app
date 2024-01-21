@@ -1,6 +1,6 @@
 
 
-export interface Resume {
+export interface IResume {
     _id: string,
     name: string,
     userId: string,

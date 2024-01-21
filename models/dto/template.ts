@@ -1,4 +1,4 @@
-import { Resume } from "@models/domain/Resume";
+import { IResume } from "@models/domain/IResume";
 import { TemplateServer } from "@models/domain/Template";
 import { Schema, model, models } from "mongoose";
 

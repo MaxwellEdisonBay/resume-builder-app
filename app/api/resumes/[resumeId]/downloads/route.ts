@@ -6,11 +6,13 @@ import {
 import {
   getSignedUrl
 } from "@aws-sdk/s3-request-presigner";
-import { Resume } from "@models/domain/Resume";
+import { IUser } from "@models/domain/IUser";
+import { IResume } from "@models/domain/IResume";
 import { Section } from "@models/domain/Section";
 import { BaseErrorResponse } from "@models/dto/error";
 import ResumeModel from "@models/dto/resume";
 import SectionModel from "@models/dto/section";
+import User from "@models/dto/user";
 import { createTexFromSections } from "@utils/latex/samples/compile";
 import { S3_BUCKET_NAME, s3 } from "@utils/s3Bucket";
 import { exec as execCallback } from "child_process";
@@ -98,7 +100,7 @@ export async function GET(
 
     // const fileName = new mongoose.Types.UUID().toString();
 
-    const resume: Resume | null = await ResumeModel.findById(params.resumeId);
+    const resume: IResume | null = await ResumeModel.findById(params.resumeId);
     if (!resume) {
       const errorResponse: BaseErrorResponse = {
         message: `Resume with ID ${params.resumeId} does not exist.`,
@@ -114,7 +116,16 @@ export async function GET(
       const sections: Section[] = await SectionModel.find({
         resumeId: params.resumeId,
       });
-      const resumeTexMarkup = createTexFromSections(sections);
+      const user: IUser | null = await User.findById(session?.user.id)
+      if (!user) {
+        const errorResponse: BaseErrorResponse = {
+          message: `User data does not exist.`,
+        };
+        return new NextResponse(JSON.stringify(errorResponse), {
+          status: 500,
+        });
+      }
+      const resumeTexMarkup = createTexFromSections(sections, user);
       console.log({ resumeTexMarkup });
       const fileName = "Resume";
       const texFileName = `${fileName}.tex`;

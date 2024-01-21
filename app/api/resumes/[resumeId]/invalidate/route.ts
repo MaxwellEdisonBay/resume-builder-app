@@ -1,6 +1,6 @@
 import { authOptions } from "@app/api/auth/[...nextauth]/route";
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { Resume } from "@models/domain/Resume";
+import { IResume } from "@models/domain/IResume";
 import { BaseErrorResponse } from "@models/dto/error";
 import ResumeModel from "@models/dto/resume";
 import { S3_BUCKET_NAME, s3 } from "@utils/s3Bucket";
@@ -24,7 +24,7 @@ export async function POST(
     });
   }
   try {
-    const oldResumeResponse: Resume | null =
+    const oldResumeResponse: IResume | null =
       await ResumeModel.findByIdAndUpdate(resumeId, {
         $unset: { downloads: 1 },
       });

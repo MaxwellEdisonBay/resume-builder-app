@@ -43,7 +43,13 @@ export default function SettingsProfilePage() {
   const handleUpdate = async (data: ProfileFormValues) => {
     try {
       setUpdatingProfile(true)
-      const response = await fetch(`api/profile`, {
+      const invalidateRs = await fetch(`/api/resumes/invalidate`, {
+        // body: JSON.stringify(data),
+        method: "POST",
+      });
+      const invalidateRsJson = await invalidateRs.json()
+      console.log({invalidateRsJson})
+      const response = await fetch(`/api/profile`, {
         body: JSON.stringify(data),
         method: "POST",
       });
