@@ -4,12 +4,48 @@ import { Content } from "@models/domain/Content";
 import moment from "moment";
 import { shortDegreeLevels, workTypesNames } from "@utils/textUtils";
 import { EducationDegreeLevel } from "@models/api/ContentRs";
+import { IUser } from "@models/domain/IUser";
 
 const getFormattedDate = (date?: Date) => {
   return date ? moment(new Date(date)).format("MMM YYYY") : "Present";
 };
 
-export const createTexFromSections = (sections: Section[]) => {
+export const createTexFromSections = (sections: Section[], userData: IUser) => {
+  const addUserHeader = () => {
+    const phoneBlock = userData.phone
+      ? `\\faMobile \\hspace{.5pt} \\href{tel:${userData.phone}}{${userData.phone}}
+      $|$
+      `
+      : "";
+    const linkedinBlock = userData.linkedinUrl
+      ? `\\faLinkedinSquare \\hspace{.5pt} \\href{${userData.linkedinUrl}}{LinkedIn}
+      $|$
+      `
+      : "";
+    const githubBlock = userData.githubUrl
+      ? `
+      $|$
+      \\faGithub \\hspace{.5pt} \\href{${userData.githubUrl}}{GitHub}`
+      : "";
+    const portfolioBlock = userData.portfolioUrl
+      ? `
+      $|$
+      \\faGlobe \\hspace{.5pt} \\href{${userData.portfolioUrl}}{Portfolio}`
+      : "";
+    const locationBlock = userData.location
+      ? `
+      $|$
+      \\faMapMarker \\hspace{.5pt} {${userData.location}}`
+      : "";
+    return `%---------- HEADING ----------
+    
+      \\begin{center}
+          \\textbf{\\Huge \\scshape ${userData.firstName} ${userData.lastName}} \\\\ \\vspace{3pt}
+          \\small
+          ${phoneBlock}${linkedinBlock}\\faAt \\hspace{.5pt} \\href{mailto:${userData.displayEmail}}{${userData.displayEmail}}${githubBlock}${portfolioBlock}${locationBlock}
+      \\end{center}`;
+  };
+
   const addEducationContent = (content: Content) => {
     const markup = `\\resumeSubheading
     {${content.title}
@@ -65,9 +101,9 @@ export const createTexFromSections = (sections: Section[]) => {
   };
 
   const addSkillsContent = (content: Content) => {
-    return `\\textbf{${content.title}:}{ ${content.bullets?.map((b) => b.text).join(
-      ", "
-    )} } \\\\ \\vspace{3pt}`;
+    return `\\textbf{${content.title}:}{ ${content.bullets
+      ?.map((b) => b.text)
+      .join(", ")} } \\\\ \\vspace{3pt}`;
   };
 
   const addSkillsSection = (section: Section) => {
@@ -86,10 +122,14 @@ export const createTexFromSections = (sections: Section[]) => {
 
   const addProjectsContent = (content: Content) => {
     return `\\resumeProjectHeading
-    {\\textbf{${content.title}} $|$ \\emph{\\href{${content.githubUrl || content.websiteUrl}}{\\color{blue}${content.githubUrl ? "Github" : content.websiteUrl ? "Website" : ""}}}}{}
+    {\\textbf{${content.title}} $|$ \\emph{\\href{${
+      content.githubUrl || content.websiteUrl
+    }}{\\color{blue}${
+      content.githubUrl ? "Github" : content.websiteUrl ? "Website" : ""
+    }}}}{}
       \\resumeItemListStart
         ${content.bullets?.map((b) => `\\resumeItem{${b.text}}`).join("\n")}
-      \\resumeItemListEnd`
+      \\resumeItemListEnd`;
   };
 
   const addProjectsSection = (section: Section) => {
@@ -101,8 +141,7 @@ export const createTexFromSections = (sections: Section[]) => {
           
         ${section.content?.map((c) => addProjectsContent(c)).join(`\n\n`)}
           
-        \\resumeSubHeadingListEnd`
-
+        \\resumeSubHeadingListEnd`;
   };
 
   const markup = `
@@ -231,23 +270,7 @@ export const createTexFromSections = (sections: Section[]) => {
     
     \\begin{document}
     
-    %---------- HEADING ----------
-    
-    \\begin{center}
-        \\textbf{\\Huge \\scshape Aras Güngöre} \\\\ \\vspace{3pt}
-        \\small
-        \\faMobile \\hspace{.5pt} \\href{tel:905314204536}{+90 531 420 4536}
-        $|$
-        \\faAt \\hspace{.5pt} \\href{mailto:arasgungore09@gmail.com}{arasgungore09@gmail.com}
-        $|$
-        \\faLinkedinSquare \\hspace{.5pt} \\href{https://www.linkedin.com/in/arasgungore}{LinkedIn}
-        $|$
-        \\faGithub \\hspace{.5pt} \\href{https://github.com/arasgungore}{GitHub}
-        $|$
-        \\faGlobe \\hspace{.5pt} \\href{https://arasgungore.github.io}{Portfolio}
-        $|$
-        \\faMapMarker \\hspace{.5pt} \\href{https://www.google.com/maps/place/Bogazici+University+North+Campus/@41.0863067,29.0441352,15z/data=!4m5!3m4!1s0x0:0x9d2497b07c8edb2f!8m2!3d41.0863067!4d29.0441352}{Istanbul, Turkey}
-    \\end{center}
+    ${addUserHeader()}
     
     
     

@@ -1,35 +1,34 @@
 "use client";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@components/ui/alert-dialog";
 import { Button } from "@components/ui/button";
 import { Card, CardContent } from "@components/ui/card";
-import { Resume } from "@models/domain/Resume";
-import { BaseDeleteById } from "@models/domain/Section";
+import { IResume } from "@models/domain/IResume";
 import { BaseErrorResponse } from "@models/dto/error";
 import { showToast } from "@utils/toast";
 import { saveAs } from "file-saver";
 import {
-    Download,
-    FileEdit,
-    Loader2,
-    MoreVertical,
-    Trash2
+  Download,
+  FileEdit,
+  Loader2,
+  MoreVertical,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -37,7 +36,7 @@ import { useState } from "react";
 import resumeCoverImage from "../../public/assets/images/page-content/Victory.svg";
 
 export interface ResumeCardProps {
-  resume: Resume;
+  resume: IResume;
   onUpdateCacheAfterDelete: () => void;
 }
 
@@ -54,13 +53,8 @@ const ResumeCard = ({ resume, onUpdateCacheAfterDelete }: ResumeCardProps) => {
     const handleDeleteResume = async () => {
       setCardLoading(true);
       try {
-        const deleteId: BaseDeleteById = {
-          id: resume._id,
-        };
-        const response = await fetch(`/api/resumes`, {
+        const response = await fetch(`/api/resumes/${resume._id}`, {
           method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(deleteId),
         });
         if (response.ok) {
           onUpdateCacheAfterDelete();

@@ -4,7 +4,7 @@ import CreateResumeDialog from "@components/resumes/CreateResumeDialog";
 import ResumeCard from "@components/resumes/ResumeCard";
 import ResumeCardSkeleton from "@components/resumes/ResumeCardSkeleton";
 import { Button } from "@components/ui/button";
-import { Resume } from "@models/domain/Resume";
+import { IResume } from "@models/domain/IResume";
 import { showToast } from "@utils/toast";
 import cloneDeep from "lodash.clonedeep";
 import { Plus } from "lucide-react";
@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import emptyResumesImage from "../../public/assets/images/page-content/Animal.svg";
 
 const ResumeListPage = () => {
-  const [resumes, setResumes] = useState<Resume[]>();
+  const [resumes, setResumes] = useState<IResume[]>();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { data: session } = useSession();
@@ -25,7 +25,7 @@ const ResumeListPage = () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/resumes`);
-      const resumesRs: Resume[] = await response.json();
+      const resumesRs: IResume[] = await response.json();
       setResumes(resumesRs);
     } catch (e) {
       const message =
@@ -45,7 +45,7 @@ const ResumeListPage = () => {
     // console.log({ name });
     setLoading(true);
     try {
-      const newResume: Resume = {
+      const newResume: IResume = {
         name,
         _id: new mongoose.Types.ObjectId().toString(),
         userId: session?.user.id || "",
@@ -56,7 +56,7 @@ const ResumeListPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newResume),
       });
-      const resumeRs: Resume = await response.json();
+      const resumeRs: IResume = await response.json();
 
       setResumes((oldResumes) => {
         const newResumes = cloneDeep(oldResumes);

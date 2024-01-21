@@ -1,7 +1,7 @@
-import { Resume } from "@models/domain/Resume";
+import { IResume } from "@models/domain/IResume";
 import { Schema, model, models } from "mongoose";
 
-const ResumeSchema = new Schema<Resume>(
+const ResumeSchema = new Schema<IResume>(
   {
     sections: {
       type: [String],
@@ -30,6 +30,6 @@ const ResumeSchema = new Schema<Resume>(
   { timestamps: true }
 );
 
-const Resume = models.Resume || model<Resume>("Resume", ResumeSchema);
+const Resume = models.Resume || model<IResume>("Resume", ResumeSchema);
 
 export default Resume;
