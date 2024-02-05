@@ -14,6 +14,7 @@ import { Separator } from "@components/ui/separator";
 import { usePathname, useSearchParams } from "next/navigation";
 import Lottie from "lottie-react";
 import pdfLoadingAnimation from "@public/assets/animations/documentAnimation.json";
+import { BaseErrorResponse } from "@models/dto/error";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.js",
@@ -35,15 +36,21 @@ const ResumePreviewPage = ({ params }: { params: { resumeId: string } }) => {
       try {
         setLoading(true);
         const response = await fetch(`/api/resumes/${params.resumeId}/downloads`);
+        if (response.ok) {
+          const blob = await response.blob();
+          let reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = () => {
+            const base64String = reader.result ? (reader.result as string) : "";
+            setPdfString(base64String.substring(base64String.indexOf(",") + 1));
+            setLoading(false);
+          };
+        } else {
+          const errorRs: BaseErrorResponse = await response.json()
+          showToast({message: errorRs.message, type: "error"})
+        }
         // console.log(await response.json())
-        const blob = await response.blob();
-        let reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = () => {
-          const base64String = reader.result ? (reader.result as string) : "";
-          setPdfString(base64String.substring(base64String.indexOf(",") + 1));
-          setLoading(false);
-        };
+        
       } catch (e) {
         const message =
           e instanceof Error
