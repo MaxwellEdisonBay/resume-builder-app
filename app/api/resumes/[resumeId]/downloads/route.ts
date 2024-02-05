@@ -127,9 +127,14 @@ export async function GET(
       const pdfFileName = `${fileName}.pdf`;
       const tempDir = tmpdir();
 
-      const tempDirPath = await mkdtemp(
-        join(tempDir, `resume-${session?.user.id}-`)
-      );
+      let tempDirPath = ""
+      try {
+        tempDirPath = await mkdtemp(
+          join(tempDir, `resume-${session?.user.id}-`)
+        );
+      } catch (e) {
+        console.error(e)
+      }
       const texFilePath = join(tempDirPath, texFileName);
       const pdfFilePath = join(tempDirPath, pdfFileName);
       await writeFile(texFilePath, resumeTexMarkup, "utf8");
@@ -139,30 +144,39 @@ export async function GET(
 
       const pdfResult = await exec(command);
       console.log({ pdfResult });
-      if (pdfResult.stderr) {
-        const errorResponse: BaseErrorResponse = {
-          message: "Failed to compile a LaTex file.",
-        };
-        return new NextResponse(JSON.stringify(errorResponse), {
-          status: 500,
-        });
-      }
+      // if (pdfResult.stderr) {
+      //   const errorResponse: BaseErrorResponse = {
+      //     message: "Failed to compile a LaTex file.",
+      //   };
+      //   return new NextResponse(JSON.stringify(errorResponse), {
+      //     status: 500,
+      //   });
+      // }
       // const pdfFile = createReadStream(pdfPath)
       // const pdfFileStat = await stat(pdfFilePath);
-
-      const fileReadRes = await readFile(pdfFilePath);
+      let fileReadRes: Buffer | null = null;
+      try {
+        fileReadRes = await readFile(pdfFilePath);
+      } catch (err) {
+        console.error(err)
+      }
       const mimeType = mime.getType(pdfFilePath) || "";
       bucketFileName = `resume-${
         session?.user.id
       }-${new mongoose.Types.ObjectId().toString()}.pdf`;
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: S3_BUCKET_NAME,
-          Key: bucketFileName,
-          Body: fileReadRes,
-          ContentType: mimeType,
-        })
-      );
+      if (fileReadRes) {
+        const s3Res = await s3.send(
+          new PutObjectCommand({
+            Bucket: S3_BUCKET_NAME,
+            Key: bucketFileName,
+            Body: fileReadRes,
+            ContentType: mimeType,
+          })
+        );
+        console.log(s3Res)
+      } else {
+        console.log(fileReadRes)
+      }
       await rimraf(tempDirPath);
       console.log("Removed " + tempDirPath);
 
