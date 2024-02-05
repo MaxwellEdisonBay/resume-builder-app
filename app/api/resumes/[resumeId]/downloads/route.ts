@@ -11,6 +11,7 @@ import { authOptions } from "@utils/auth/authOptions";
 import { createTexFromSections } from "@utils/latex/samples/compile";
 import { S3_BUCKET_NAME, s3 } from "@utils/s3Bucket";
 import { exec as execCallback } from "child_process";
+import { tr } from "date-fns/locale";
 import {
   createReadStream,
   mkdir as mkdirCallback,

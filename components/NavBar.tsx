@@ -25,7 +25,7 @@ const NavBar = () => {
 //   const signOut = () => {};
 
 //   const signIn = (id: string) => {};
-
+  console.log(providers)
   useEffect(() => {
     const initProviders = async () => {
       const response = await getProviders();
