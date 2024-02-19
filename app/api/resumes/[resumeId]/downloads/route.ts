@@ -126,14 +126,15 @@ export async function GET(
       const texFileName = `${fileName}.tex`;
       const pdfFileName = `${fileName}.pdf`;
       const tempDir = tmpdir();
+      console.log({ tempDir });
 
-      let tempDirPath = ""
+      let tempDirPath = "";
       try {
         tempDirPath = await mkdtemp(
           join(tempDir, `resume-${session?.user.id}-`)
         );
       } catch (e) {
-        console.error(e)
+        console.error(e);
       }
       const texFilePath = join(tempDirPath, texFileName);
       const pdfFilePath = join(tempDirPath, pdfFileName);
@@ -158,7 +159,7 @@ export async function GET(
       try {
         fileReadRes = await readFile(pdfFilePath);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
       const mimeType = mime.getType(pdfFilePath) || "";
       bucketFileName = `resume-${
@@ -173,9 +174,9 @@ export async function GET(
             ContentType: mimeType,
           })
         );
-        console.log(s3Res)
+        console.log(s3Res);
       } else {
-        console.log(fileReadRes)
+        console.log(fileReadRes);
       }
       await rimraf(tempDirPath);
       console.log("Removed " + tempDirPath);

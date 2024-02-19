@@ -54,7 +54,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install app dependencies
-RUN npm install
+RUN npm ci
 
 # Copy app files
 COPY . .
@@ -67,7 +67,15 @@ RUN npm run build
 RUN    miktexsetup finish \
     && initexmf --set-config-value=[MPM]AutoInstall=1 \
     && miktex --admin packages update \
-    && miktex --admin packages install amsfonts
+    && miktex --admin packages install amsfonts \
+    && miktex --admin packages install titlesec \
+    && miktex --admin packages install marvosym \
+    && miktex --admin packages install enumitem \
+    && miktex --admin packages install hyperref \
+    && miktex --admin packages install fancyhdr \
+    && miktex --admin packages install babel \
+    && miktex --admin packages install hyphenat \
+    && miktex --admin packages install fontawesome
 
 # USER root
 ENV PATH=/var/lib/miktex/bin:${PATH}

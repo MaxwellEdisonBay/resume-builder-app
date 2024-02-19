@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-builder
+  labels:
+    app: resume-builder
+spec:
+  selector:
+    matchLabels:
+      app: resume-builder
+      tier: web
+  template:
+    metadata:
+      labels:
+        app: resume-builder
+        tier: web
+    spec:
+      containers:
+      - name: resume-builder-app
+        image: us-east4-docker.pkg.dev/balmy-metrics-413500/resume-builder-app/resume-app:1.0.6
+        ports:
+        - containerPort: 3000
